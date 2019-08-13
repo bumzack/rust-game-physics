@@ -30,8 +30,6 @@ pub fn assert_tuple(actual: &Vector, expected: &Vector) {
     assert_eq!(assert_two_float(actual.w, expected.w), true);
 }
 
-
-
 pub fn assert_two_float(a: f32, b: f32) -> bool {
     let EPSILON = 0.00001;
 
@@ -45,4 +43,3 @@ pub fn assert_two_float(a: f32, b: f32) -> bool {
 pub fn assert_float(actual: f32, expected: f32) {
     assert_eq!(assert_two_float(actual, expected), true);
 }
-

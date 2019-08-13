@@ -372,7 +372,6 @@ impl<'a, 'b> Mul<&'b Matrix> for &'a Matrix {
     }
 }
 
-
 impl Mul<Vector> for Matrix {
     type Output = Vector;
 
