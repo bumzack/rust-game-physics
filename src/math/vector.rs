@@ -196,6 +196,19 @@ impl<'a> Mul<f32> for &'a Vector {
     }
 }
 
+impl<'a> Mul<&f32> for &'a Vector {
+    type Output = Vector;
+
+    fn mul(self, rhs: &f32) -> Vector {
+        Vector {
+            x: self.x * *rhs,
+            y: self.y * *rhs,
+            z: self.z * *rhs,
+            w: self.w * *rhs,
+        }
+    }
+}
+
 impl Mul for Vector {
     type Output = Vector;
 
