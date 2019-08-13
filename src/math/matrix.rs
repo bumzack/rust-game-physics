@@ -346,8 +346,8 @@ impl MatrixOps for Matrix {
     }
 
     fn view_transform(from: &Vector, to: &Vector, up: &Vector) -> Matrix {
-        let forward = Vector::normalize(&(to - from));
-        let left = &forward * &Vector::normalize(up);
+        let forward = Vector::norm(&(to - from));
+        let left = &forward * &Vector::norm(up);
         let true_up = &left * &forward;
 
         let orientation = Matrix::new_matrix_4x4(

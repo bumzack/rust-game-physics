@@ -1,7 +1,4 @@
-use std::cell::RefCell;
 use std::collections::HashMap;
-use std::hash::Hash;
-use std::rc::Rc;
 
 use crate::force::{ParticleForceGeneratorOpsIdx, ParticleIdx};
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
@@ -12,10 +9,16 @@ use crate::particle::particle::{Particle, ParticleOps};
 pub struct ParticleForceRegistry<PFG: ParticleForceGeneratorOps> {
     particle_force_generators: Vec<PFG>,
     particles: Vec<Particle>,
+    registry: HashMap<ParticleForceGeneratorOpsIdx, Vec<ParticleIdx>>,
 }
 
 pub trait ParticleForceRegistryOps<PFG: ParticleForceGeneratorOps> {
-    fn add(&mut self, p: Particle, g: PFG) -> (ParticleIdx, ParticleForceGeneratorOpsIdx);
+    fn add_particle(&mut self, p: Particle) -> ParticleIdx;
+    fn add_particle_force_generator(&mut self, g: PFG) -> ParticleForceGeneratorOpsIdx;
+
+    fn add_force_for_particle(&mut self, p_idx: ParticleIdx, g_idx: ParticleForceGeneratorOpsIdx);
+
+
     // fn remove(&mut self,  gen:vPFG);
     fn clear(&mut self);
     fn update_forces(&mut self, duration: f32);
@@ -28,27 +31,38 @@ pub trait ParticleForceRegistryOps<PFG: ParticleForceGeneratorOps> {
 }
 
 impl<PFG: ParticleForceGeneratorOps> ParticleForceRegistryOps<PFG> for ParticleForceRegistry<PFG> {
-    fn add(&mut self, p: Particle, g: PFG) -> (ParticleIdx, ParticleForceGeneratorOpsIdx) {
+    fn add_particle(&mut self, p: Particle) -> ParticleIdx {
         self.particles.push(p);
-        self.particle_force_generators.push(g);
-        (self.particles.len() - 1, self.particle_force_generators.len() - 1)
+        self.particles.len() - 1
     }
 
+    fn add_particle_force_generator(&mut self, g: PFG) -> ParticleForceGeneratorOpsIdx {
+        self.particle_force_generators.push(g);
+        self.particle_force_generators.len() - 1
+    }
 
-    //    fn remove(&mut self, p: &'a Particle, gen: &'a PFG) {
-    //        //TODO: find entry with the two parameters and remove ...
-    //    }
+    fn add_force_for_particle(&mut self, p_idx: ParticleIdx, g_idx: ParticleForceGeneratorOpsIdx) {
+        if !self.registry.contains_key(&g_idx) {
+            self.registry.insert(g_idx, Vec::new());
+        }
+        let v = &mut self.registry.get_mut(&g_idx).unwrap();
+        v.push(p_idx);
+    }
 
     fn clear(&mut self) {
-        self.particle_force_generators.clear();
-        self.particles.clear();
+        // TODO clear the particles and generators too?
+        // self.particle_force_generators.clear();
+        // self.particles.clear();
+        self.registry.clear();
     }
 
     fn update_forces(&mut self, duration: f32) {
-        for i in 0..self.particles.len() {
-            let mut p = self.particles[i];
-            let pfg = &self.particle_force_generators[i];
-            pfg.update_force(&mut p, duration);
+        for (gen_idx, particles_indices) in self.registry.iter() {
+            for p_idx in particles_indices.iter() {
+                let mut p = self.particles[*p_idx];
+                let pfg = &self.particle_force_generators[*gen_idx];
+                pfg.update_force(&mut p, duration);
+            }
         }
     }
 
@@ -76,6 +90,7 @@ impl<PFG: ParticleForceGeneratorOps> ParticleForceRegistry<PFG> {
         ParticleForceRegistry {
             particle_force_generators: Vec::new(),
             particles: Vec::new(),
+            registry: Default::default(),
         }
     }
 }

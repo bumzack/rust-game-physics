@@ -2,9 +2,10 @@
 // THATS FOR A LEFT HANDED COORDINATE SYSTEM ...
 // where are modifications needed
 
-use crate::math::common::{assert_float, assert_vector};
 use std::f32::consts::SQRT_2;
 use std::ops::{Add, BitXor, Div, Mul, Neg, Sub};
+
+use crate::math::common::{assert_float, assert_vector};
 
 pub const ORIGIN: Vector = Vector {
     x: 0.0,
@@ -22,8 +23,11 @@ pub struct Vector {
 }
 
 pub trait VectorOps {
-    fn magnitude(a: &Vector) -> f32;
-    fn normalize(a: &Vector) -> Vector;
+    fn mag(a: &Vector) -> f32;
+    fn norm(a: &Vector) -> Vector;
+
+    fn magnitude(&self) -> f32;
+    fn normalize(&mut self);
 
     fn new_vector(x: f32, y: f32, z: f32) -> Vector;
     fn new_point(x: f32, y: f32, z: f32) -> Vector;
@@ -37,18 +41,30 @@ pub trait VectorOps {
 }
 
 impl VectorOps for Vector {
-    fn magnitude(a: &Vector) -> f32 {
+    fn mag(a: &Vector) -> f32 {
         (a.x * a.x + a.y * a.y + a.z * a.z + a.w * a.w).sqrt()
     }
 
-    fn normalize(a: &Vector) -> Vector {
-        let m = Vector::magnitude(a);
+    fn norm(a: &Vector) -> Vector {
+        let m = Vector::mag(a);
         Vector {
             x: a.x / m,
             y: a.y / m,
             z: a.z / m,
             w: a.w / m,
         }
+    }
+
+    fn magnitude(&self) -> f32 {
+        Self::mag(self)
+    }
+
+    fn normalize(&mut self) {
+        let m = Vector::mag(self);
+        self.x = self.x / m;
+        self.y = self.y / m;
+        self.z = self.z / m;
+        self.w = self.w / m;
     }
 
     fn new_vector(x: f32, y: f32, z: f32) -> Vector {
@@ -196,18 +212,31 @@ impl<'a> Mul<f32> for &'a Vector {
     }
 }
 
-impl<'a> Mul<&f32> for &'a Vector {
+impl<'a> Mul<&'a Vector> for f32 {
     type Output = Vector;
 
-    fn mul(self, rhs: &f32) -> Vector {
+    fn mul(self, rhs: &'a Vector) -> Vector {
         Vector {
-            x: self.x * *rhs,
-            y: self.y * *rhs,
-            z: self.z * *rhs,
-            w: self.w * *rhs,
+            x: self * rhs.x,
+            y: self * rhs.y,
+            z: self * rhs.z,
+            w: self * rhs.w,
         }
     }
 }
+
+//impl<'a> Mul<&f32> for &'a Vector {
+//    type Output = Vector;
+//
+//    fn mul(self, rhs: &f32) -> Vector {
+//        Vector {
+//            x: self.x * *rhs,
+//            y: self.y * *rhs,
+//            z: self.z * *rhs,
+//            w: self.w * *rhs,
+//        }
+//    }
+//}
 
 impl Mul for Vector {
     type Output = Vector;
@@ -376,32 +405,32 @@ fn test_div_tuple_scalar() {
 #[test]
 fn test_magnitude() {
     let v = Vector::new_vector(1., 0., 0.);
-    let m = Vector::magnitude(&v);
+    let m = Vector::mag(&v);
     assert_eq!(m, 1.);
 
     let v = Vector::new_vector(0., 1., 0.);
-    let m = Vector::magnitude(&v);
+    let m = Vector::mag(&v);
     assert_eq!(m, 1.);
 
     let v = Vector::new_vector(0., 0., 1.);
-    let m = Vector::magnitude(&v);
+    let m = Vector::mag(&v);
     assert_eq!(m, 1.);
 
     let expected: f32 = 14.0;
 
     let v = Vector::new_vector(1., 2., 3.);
-    let m = Vector::magnitude(&v);
+    let m = Vector::mag(&v);
     assert_float(m, expected.sqrt());
 
     let v = Vector::new_vector(-1., -2., -3.);
-    let m = Vector::magnitude(&v);
+    let m = Vector::mag(&v);
     assert_float(m, expected.sqrt());
 }
 
 #[test]
 fn test_normalize() {
     let v = Vector::new_vector(4., 0., 0.);
-    let n = Vector::normalize(&v);
+    let n = Vector::norm(&v);
     assert_float(n.x, 1.);
     assert_float(n.y, 0.);
     assert_float(n.z, 0.);
@@ -410,15 +439,15 @@ fn test_normalize() {
     let expected: f32 = 14.0;
 
     let v = Vector::new_vector(1., 2., 3.);
-    let n = Vector::normalize(&v);
+    let n = Vector::norm(&v);
     assert_float(n.x, 1. / expected.sqrt());
     assert_float(n.y, 2. / expected.sqrt());
     assert_float(n.z, 3. / expected.sqrt());
     assert!(Vector::is_vector(&n));
 
     let v = Vector::new_vector(1., 2., 3.);
-    let n = Vector::normalize(&v);
-    let m = Vector::magnitude(&n);
+    let n = Vector::norm(&v);
+    let m = Vector::mag(&n);
     assert_float(m, 1.);
 }
 
