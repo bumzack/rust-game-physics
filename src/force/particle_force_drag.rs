@@ -11,12 +11,13 @@ pub struct ParticleForceDrag {
 
 impl<'a> ParticleForceGeneratorOps for ParticleForceDrag {
     fn update_force(&self, particle: &mut Particle, duration: f32) {
-        let mut f = particle.get_velocity();
-//        let mut drag_coeff = f.magnitude();
-//        drag_coeff = self.k1 * drag_coeff + self.k2 * drag_coeff * drag_coeff;
-//        f.normalize();
-//        f = &(-drag_coeff * f);
-//        particle.add_force(&f);
+        let mut  f = Vector::new_vector_from( particle.get_velocity());
+        let mut drag_coeff = f.magnitude();
+        drag_coeff = self.k1 * drag_coeff + self.k2 * drag_coeff * drag_coeff;
+        f.normalize();
+        f = -drag_coeff * f;
+        println!("add force from drag: {:?},    particle.id = {}", f, particle.get_id());
+        particle.add_force(&f);
     }
 }
 

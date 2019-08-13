@@ -12,6 +12,7 @@ impl<'a> ParticleForceGeneratorOps for ParticleForceGravity  {
     fn update_force(&self, particle: &mut Particle, duration: f32) {
         if !particle.has_finite_mass() { return; }
         let f = &self.gravity * particle.get_mass();
+        println!("add force from gravity: {:?}         particle.id = {}", f, particle.get_id());
         particle.add_force(&f);
     }
 }

@@ -30,6 +30,8 @@ pub trait VectorOps {
     fn normalize(&mut self);
 
     fn new_vector(x: f32, y: f32, z: f32) -> Vector;
+    fn new_vector_from(v: &Vector) -> Vector;
+
     fn new_point(x: f32, y: f32, z: f32) -> Vector;
     fn new(x: f32, y: f32, z: f32, w: f32) -> Vector;
     fn empty() -> Vector;
@@ -72,6 +74,15 @@ impl VectorOps for Vector {
             x: x,
             y: y,
             z: z,
+            w: 0.0,
+        }
+    }
+
+    fn new_vector_from(v: &Vector) -> Vector {
+        Vector {
+            x: v.x,
+            y: v.y,
+            z: v.z,
             w: 0.0,
         }
     }
@@ -194,7 +205,20 @@ impl Mul<f32> for Vector {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,
-            w: self.w * rhs,
+            w: self.w,
+        }
+    }
+}
+
+impl Mul<Vector> for f32 {
+    type Output = Vector;
+
+    fn mul(self, rhs: Vector) -> Vector {
+        Vector {
+            x: self * rhs.x,
+            y: self * rhs.y,
+            z: self * rhs.z,
+            w: rhs.w,
         }
     }
 }
@@ -207,7 +231,7 @@ impl<'a> Mul<f32> for &'a Vector {
             x: self.x * rhs,
             y: self.y * rhs,
             z: self.z * rhs,
-            w: self.w * rhs,
+            w: self.w,
         }
     }
 }
@@ -220,7 +244,7 @@ impl<'a> Mul<&'a Vector> for f32 {
             x: self * rhs.x,
             y: self * rhs.y,
             z: self * rhs.z,
-            w: self * rhs.w,
+            w: rhs.w,
         }
     }
 }
