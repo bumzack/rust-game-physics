@@ -3,11 +3,4 @@
 [[package]]
 name = "rust-game-physics"
 version = "0.1.0"
-dependencies = [
- "rust_game_physics_math 0.1.0",
-]
-
-[[package]]
-name = "rust_game_physics_math"
-version = "0.1.0"
 

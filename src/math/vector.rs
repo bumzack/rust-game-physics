@@ -1,9 +1,17 @@
+// TODO
+// THATS FOR A LEFT HANDED COORDINATE SYSTEM ...
+// where are modifications needed
+
+use crate::math::common::{assert_float, assert_vector};
 use std::f32::consts::SQRT_2;
 use std::ops::{Add, BitXor, Div, Mul, Neg, Sub};
-use crate::common::{assert_float, assert_tuple};
 
-
-pub const ORIGIN: Vector = Vector { x: 0.0, y: 0.0, z: 0.0, w: 1.0 };
+pub const ORIGIN: Vector = Vector {
+    x: 0.0,
+    y: 0.0,
+    z: 0.0,
+    w: 1.0,
+};
 
 #[derive(Clone, Debug)]
 pub struct Vector {
@@ -53,21 +61,11 @@ impl VectorOps for Vector {
     }
 
     fn new_point(x: f32, y: f32, z: f32) -> Vector {
-        Vector {
-            x,
-            y,
-            z,
-            w: 1.0,
-        }
+        Vector { x, y, z, w: 1.0 }
     }
 
     fn new(x: f32, y: f32, z: f32, w: f32) -> Vector {
-        Vector {
-            x,
-            y,
-            z,
-            w,
-        }
+        Vector { x, y, z, w }
     }
 
     fn empty() -> Vector {
@@ -172,7 +170,6 @@ impl<'a> Neg for &'a Vector {
     }
 }
 
-
 impl Mul<f32> for Vector {
     type Output = Vector;
 
@@ -203,9 +200,11 @@ impl Mul for Vector {
     type Output = Vector;
 
     fn mul(self, rhs: Vector) -> Vector {
-        Vector::new_vector(self.y * rhs.z - self.z * rhs.y,
-                           self.z * rhs.x - self.x * rhs.z,
-                           self.x * rhs.y - self.y * rhs.x)
+        Vector::new_vector(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
+        )
     }
 }
 
@@ -213,9 +212,11 @@ impl<'a, 'b> Mul<&'b Vector> for &'a Vector {
     type Output = Vector;
 
     fn mul(self, rhs: &'b Vector) -> Vector {
-        Vector::new_vector(self.y * rhs.z - self.z * rhs.y,
-                           self.z * rhs.x - self.x * rhs.z,
-                           self.x * rhs.y - self.y * rhs.x)
+        Vector::new_vector(
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
+        )
     }
 }
 
@@ -249,7 +250,6 @@ impl Div<f32> for Vector {
         }
     }
 }
-
 
 #[test]
 fn test_is_point() {
@@ -306,7 +306,6 @@ fn test_sub_vec_point() {
     assert_eq!(c.z, -6.0);
     assert!(Vector::is_point(&c));
 }
-
 
 #[test]
 fn test_sub_vec_vec() {
@@ -375,7 +374,6 @@ fn test_magnitude() {
     let m = Vector::magnitude(&v);
     assert_eq!(m, 1.);
 
-
     let expected: f32 = 14.0;
 
     let v = Vector::new_vector(1., 2., 3.);
@@ -386,7 +384,6 @@ fn test_magnitude() {
     let m = Vector::magnitude(&v);
     assert_float(m, expected.sqrt());
 }
-
 
 #[test]
 fn test_normalize() {
@@ -406,7 +403,6 @@ fn test_normalize() {
     assert_float(n.z, 3. / expected.sqrt());
     assert!(Vector::is_vector(&n));
 
-
     let v = Vector::new_vector(1., 2., 3.);
     let n = Vector::normalize(&v);
     let m = Vector::magnitude(&n);
@@ -420,7 +416,6 @@ fn test_dot_product() {
     let c = a ^ b;
     assert_float(c, 20.);
 }
-
 
 #[test]
 fn test_cross_product() {
@@ -440,7 +435,6 @@ fn test_cross_product() {
     assert_eq!(c.z, 1.0);
 }
 
-
 #[test]
 fn test_tuple_reflecting_45() {
     let v = Vector::new_vector(1., -1., 0.);
@@ -450,7 +444,7 @@ fn test_tuple_reflecting_45() {
 
     let r_expected = Vector::new_vector(1., 1., 0.);
 
-    assert_tuple(&r, &r_expected);
+    assert_vector(&r, &r_expected);
 }
 
 #[test]
@@ -462,6 +456,5 @@ fn test_tuple_reflecting() {
 
     let r_expected = Vector::new_vector(1.0, 0.0, 0.0);
 
-    assert_tuple(&r, &r_expected);
+    assert_vector(&r, &r_expected);
 }
-

@@ -1,5 +1,5 @@
-use crate::matrix::Matrix;
-use crate::vector::Vector;
+use crate::math::matrix::Matrix;
+use crate::math::vector::Vector;
 
 pub fn assert_matrix(actual: &Matrix, expected: &Matrix) {
     assert_eq!(assert_two_float(actual.m[0][0], expected.m[0][0]), true);
@@ -23,7 +23,7 @@ pub fn assert_matrix(actual: &Matrix, expected: &Matrix) {
     assert_eq!(assert_two_float(actual.m[3][3], expected.m[3][3]), true);
 }
 
-pub fn assert_tuple(actual: &Vector, expected: &Vector) {
+pub fn assert_vector(actual: &Vector, expected: &Vector) {
     assert_eq!(assert_two_float(actual.x, expected.x), true);
     assert_eq!(assert_two_float(actual.y, expected.y), true);
     assert_eq!(assert_two_float(actual.z, expected.z), true);

@@ -1,30 +1,55 @@
+// TODO
+// THATS FOR A LEFT HANDED COORDINATE SYSTEM ...
+// where are modifications needed
+
+use crate::math::common::{assert_float, assert_matrix, assert_vector, assert_two_float};
+use crate::math::vector::Vector;
+use crate::math::vector::VectorOps;
 use std::f32::consts::{PI, SQRT_2};
-use crate::vector::Vector;
-use crate::common::{assert_two_float, assert_float, assert_matrix, assert_tuple};
 use std::ops::Mul;
-use crate::vector::VectorOps;
 
 #[derive(Clone, Debug)]
 pub struct Matrix {
     pub rows: usize,
     pub cols: usize,
-    pub  m: Vec<Vec<f32>>,
+    pub m: Vec<Vec<f32>>,
 }
 
 pub trait MatrixOps {
     fn new(row: usize, col: usize) -> Matrix;
 
-    fn new_matrix_2x2(a1: f32, b1: f32,
-                      a2: f32, b2: f32) -> Matrix;
+    fn new_matrix_2x2(a1: f32, b1: f32, a2: f32, b2: f32) -> Matrix;
 
-    fn new_matrix_3x3(a1: f32, b1: f32, c1: f32,
-                      a2: f32, b2: f32, c2: f32,
-                      a3: f32, b3: f32, c3: f32) -> Matrix;
+    fn new_matrix_3x3(
+        a1: f32,
+        b1: f32,
+        c1: f32,
+        a2: f32,
+        b2: f32,
+        c2: f32,
+        a3: f32,
+        b3: f32,
+        c3: f32,
+    ) -> Matrix;
 
-    fn new_matrix_4x4(a1: f32, b1: f32, c1: f32, d1: f32,
-                      a2: f32, b2: f32, c2: f32, d2: f32,
-                      a3: f32, b3: f32, c3: f32, d3: f32,
-                      a4: f32, b4: f32, c4: f32, d4: f32) -> Matrix;
+    fn new_matrix_4x4(
+        a1: f32,
+        b1: f32,
+        c1: f32,
+        d1: f32,
+        a2: f32,
+        b2: f32,
+        c2: f32,
+        d2: f32,
+        a3: f32,
+        b3: f32,
+        c3: f32,
+        d3: f32,
+        a4: f32,
+        b4: f32,
+        c4: f32,
+        d4: f32,
+    ) -> Matrix;
 
     fn new_identity_4x4() -> Matrix;
     fn transpose(m: &Matrix) -> Matrix;
@@ -71,7 +96,17 @@ impl MatrixOps for Matrix {
         m
     }
 
-    fn new_matrix_3x3(a1: f32, b1: f32, c1: f32, a2: f32, b2: f32, c2: f32, a3: f32, b3: f32, c3: f32) -> Matrix {
+    fn new_matrix_3x3(
+        a1: f32,
+        b1: f32,
+        c1: f32,
+        a2: f32,
+        b2: f32,
+        c2: f32,
+        a3: f32,
+        b3: f32,
+        c3: f32,
+    ) -> Matrix {
         let mut m = Matrix {
             rows: 3,
             cols: 3,
@@ -91,10 +126,24 @@ impl MatrixOps for Matrix {
         m
     }
 
-    fn new_matrix_4x4(a1: f32, b1: f32, c1: f32, d1: f32,
-                      a2: f32, b2: f32, c2: f32, d2: f32,
-                      a3: f32, b3: f32, c3: f32, d3: f32,
-                      a4: f32, b4: f32, c4: f32, d4: f32) -> Matrix {
+    fn new_matrix_4x4(
+        a1: f32,
+        b1: f32,
+        c1: f32,
+        d1: f32,
+        a2: f32,
+        b2: f32,
+        c2: f32,
+        d2: f32,
+        a3: f32,
+        b3: f32,
+        c3: f32,
+        d3: f32,
+        a4: f32,
+        b4: f32,
+        c4: f32,
+        d4: f32,
+    ) -> Matrix {
         let mut m = Matrix {
             rows: 4,
             cols: 4,
@@ -155,12 +204,12 @@ impl MatrixOps for Matrix {
         if m.rows == 2 {
             return m.m[0][0] * m.m[1][1] - m.m[0][1] * m.m[1][0];
         } else if m.rows == 3 {
-            return m.m[0][0] * m.m[1][1] * m.m[2][2] +
-                m.m[0][1] * m.m[1][2] * m.m[2][0] +
-                m.m[0][2] * m.m[1][0] * m.m[2][1] -
-                m.m[0][2] * m.m[1][1] * m.m[2][0] -
-                m.m[0][0] * m.m[1][2] * m.m[2][1] -
-                m.m[0][1] * m.m[1][0] * m.m[2][2];
+            return m.m[0][0] * m.m[1][1] * m.m[2][2]
+                + m.m[0][1] * m.m[1][2] * m.m[2][0]
+                + m.m[0][2] * m.m[1][0] * m.m[2][1]
+                - m.m[0][2] * m.m[1][1] * m.m[2][0]
+                - m.m[0][0] * m.m[1][2] * m.m[2][1]
+                - m.m[0][1] * m.m[1][0] * m.m[2][2];
         }
         let mut det = 0.0;
         for col in 0..m.cols {
@@ -301,10 +350,10 @@ impl MatrixOps for Matrix {
         let left = &forward * &Vector::normalize(up);
         let true_up = &left * &forward;
 
-        let orientation = Matrix::new_matrix_4x4(left.x, left.y, left.z, 0.0,
-                                                 true_up.x, true_up.y, true_up.z, 0.0,
-                                                 -forward.x, -forward.y, -forward.z, 0.0,
-                                                 0.0, 0.0, 0.0, 1.0);
+        let orientation = Matrix::new_matrix_4x4(
+            left.x, left.y, left.z, 0.0, true_up.x, true_up.y, true_up.z, 0.0, -forward.x,
+            -forward.y, -forward.z, 0.0, 0.0, 0.0, 0.0, 1.0,
+        );
         orientation * Matrix::translation(-from.x, -from.y, -from.z)
     }
 }
@@ -380,10 +429,22 @@ impl Mul<Vector> for Matrix {
         let mut t = Vector::empty();
 
         // TODO: not a generic code for general matrix dimensions
-        t.x = self.m[0][0] * rhs.x + self.m[0][1] * rhs.y + self.m[0][2] * rhs.z + self.m[0][3] * rhs.w;
-        t.y = self.m[1][0] * rhs.x + self.m[1][1] * rhs.y + self.m[1][2] * rhs.z + self.m[1][3] * rhs.w;
-        t.z = self.m[2][0] * rhs.x + self.m[2][1] * rhs.y + self.m[2][2] * rhs.z + self.m[2][3] * rhs.w;
-        t.w = self.m[3][0] * rhs.x + self.m[3][1] * rhs.y + self.m[3][2] * rhs.z + self.m[3][3] * rhs.w;
+        t.x = self.m[0][0] * rhs.x
+            + self.m[0][1] * rhs.y
+            + self.m[0][2] * rhs.z
+            + self.m[0][3] * rhs.w;
+        t.y = self.m[1][0] * rhs.x
+            + self.m[1][1] * rhs.y
+            + self.m[1][2] * rhs.z
+            + self.m[1][3] * rhs.w;
+        t.z = self.m[2][0] * rhs.x
+            + self.m[2][1] * rhs.y
+            + self.m[2][2] * rhs.z
+            + self.m[2][3] * rhs.w;
+        t.w = self.m[3][0] * rhs.x
+            + self.m[3][1] * rhs.y
+            + self.m[3][2] * rhs.z
+            + self.m[3][3] * rhs.w;
 
         t
     }
@@ -397,10 +458,22 @@ impl<'a, 'b> Mul<&'b Vector> for &'a Matrix {
         let mut t = Vector::empty();
 
         // TODO: not a generic code for general matrix dimensions
-        t.x = self.m[0][0] * rhs.x + self.m[0][1] * rhs.y + self.m[0][2] * rhs.z + self.m[0][3] * rhs.w;
-        t.y = self.m[1][0] * rhs.x + self.m[1][1] * rhs.y + self.m[1][2] * rhs.z + self.m[1][3] * rhs.w;
-        t.z = self.m[2][0] * rhs.x + self.m[2][1] * rhs.y + self.m[2][2] * rhs.z + self.m[2][3] * rhs.w;
-        t.w = self.m[3][0] * rhs.x + self.m[3][1] * rhs.y + self.m[3][2] * rhs.z + self.m[3][3] * rhs.w;
+        t.x = self.m[0][0] * rhs.x
+            + self.m[0][1] * rhs.y
+            + self.m[0][2] * rhs.z
+            + self.m[0][3] * rhs.w;
+        t.y = self.m[1][0] * rhs.x
+            + self.m[1][1] * rhs.y
+            + self.m[1][2] * rhs.z
+            + self.m[1][3] * rhs.w;
+        t.z = self.m[2][0] * rhs.x
+            + self.m[2][1] * rhs.y
+            + self.m[2][2] * rhs.z
+            + self.m[2][3] * rhs.w;
+        t.w = self.m[3][0] * rhs.x
+            + self.m[3][1] * rhs.y
+            + self.m[3][2] * rhs.z
+            + self.m[3][3] * rhs.w;
 
         t
     }
@@ -408,10 +481,9 @@ impl<'a, 'b> Mul<&'b Vector> for &'a Matrix {
 
 #[test]
 fn test_matrix_components() {
-    let a4x4 = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                      5.5, 6.5, 7.5, 8.5,
-                                      9.0, 10.0, 11.0, 12.0,
-                                      13.5, 14.5, 15.5, 16.5);
+    let a4x4 = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 5.5, 6.5, 7.5, 8.5, 9.0, 10.0, 11.0, 12.0, 13.5, 14.5, 15.5, 16.5,
+    );
 
     assert_eq!(a4x4.m[0][0], 1.0);
     assert_eq!(a4x4.m[0][3], 4.0);
@@ -421,16 +493,13 @@ fn test_matrix_components() {
     assert_eq!(a4x4.m[3][0], 13.5);
     assert_eq!(a4x4.m[3][2], 15.5);
 
-    let a3x3 = Matrix::new_matrix_3x3(-3.0, 5.0, 0.0,
-                                      1.0, -2.0, -7.0,
-                                      0.0, 1.0, 1.0);
+    let a3x3 = Matrix::new_matrix_3x3(-3.0, 5.0, 0.0, 1.0, -2.0, -7.0, 0.0, 1.0, 1.0);
 
     assert_eq!(a3x3.m[0][0], -3.0);
     assert_eq!(a3x3.m[1][1], -2.0);
     assert_eq!(a3x3.m[2][2], 1.0);
 
-    let a2x2 = Matrix::new_matrix_2x2(-3.0, 5.0,
-                                      1.0, -2.0);
+    let a2x2 = Matrix::new_matrix_2x2(-3.0, 5.0, 1.0, -2.0);
 
     assert_eq!(a2x2.m[0][0], -3.0);
     assert_eq!(a2x2.m[0][1], 5.0);
@@ -438,49 +507,40 @@ fn test_matrix_components() {
     assert_eq!(a2x2.m[1][1], -2.0);
 }
 
-
 #[test]
 fn test_matrix_equal() {
-    let a1 = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                    5.0, 6.0, 7.0, 8.0,
-                                    9.0, 10.0, 11.0, 12.0,
-                                    13.0, 14.0, 15.0, 16.0);
+    let a1 = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0,
+    );
 
-    let a2 = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                    5.0, 6.0, 7.0, 8.0,
-                                    9.0, 10.0, 11.0, 12.0,
-                                    13.0, 14.0, 15.0, 16.0);
+    let a2 = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0,
+    );
 
     assert!(a1 == a2);
 
-    let a1 = Matrix::new_matrix_4x4(1.1, 2.0, 3.0, 4.0,
-                                    5.0, 6.0, 7.0, 8.0,
-                                    9.0, 10.0, 11.0, 12.0,
-                                    13.0, 14.0, 15.0, 16.0);
+    let a1 = Matrix::new_matrix_4x4(
+        1.1, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0,
+    );
 
-    let a2 = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                    5.0, 6.0, 7.0, 8.0,
-                                    9.0, 10.0, 11.0, 12.0,
-                                    13.0, 14.0, 15.0, 16.0);
+    let a2 = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0,
+    );
 
     assert!(a1 != a2);
 }
 
-
 #[test]
 fn test_matrix_mul() {
-    let a = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                   5.0, 6.0, 7.0, 8.0,
-                                   9.0, 8.0, 7.0, 6.0,
-                                   5.0, 4.0, 3.0, 2.0);
+    let a = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0,
+    );
 
-    let b = Matrix::new_matrix_4x4(-2.0, 1.0, 2.0, 3.0,
-                                   3.0, 2.0, 1.0, -1.0,
-                                   4.0, 3.0, 6.0, 5.0,
-                                   1.0, 2.0, 7.0, 8.0);
+    let b = Matrix::new_matrix_4x4(
+        -2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, -1.0, 4.0, 3.0, 6.0, 5.0, 1.0, 2.0, 7.0, 8.0,
+    );
 
     let c = a * b;
-
 
     assert_float(c.m[0][0], 20.0);
     assert_float(c.m[0][1], 22.0);
@@ -505,10 +565,9 @@ fn test_matrix_mul() {
 
 #[test]
 fn test_matrix_tuple_mul() {
-    let a = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                   2.0, 4.0, 4.0, 2.0,
-                                   8.0, 6.0, 4.0, 1.0,
-                                   0.0, 0.0, 0.0, 1.0);
+    let a = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 8.0, 6.0, 4.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+    );
 
     let b = Vector::new(1.0, 2.0, 3.0, 1.0);
 
@@ -522,10 +581,9 @@ fn test_matrix_tuple_mul() {
 
 #[test]
 fn test_matrix_mul_identity() {
-    let a = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                   2.0, 4.0, 4.0, 2.0,
-                                   8.0, 6.0, 4.0, 1.0,
-                                   0.0, 0.0, 0.0, 1.0);
+    let a = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 8.0, 6.0, 4.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+    );
 
     let e = Matrix::new_identity_4x4();
 
@@ -554,13 +612,11 @@ fn test_matrix_mul_identity() {
 
 #[test]
 fn test_matrix_transpose() {
-    let a = Matrix::new_matrix_4x4(1.0, 2.0, 3.0, 4.0,
-                                   2.0, 4.0, 4.0, 2.0,
-                                   8.0, 6.0, 4.0, 1.0,
-                                   0.0, 0.0, 0.0, 1.0);
+    let a = Matrix::new_matrix_4x4(
+        1.0, 2.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 8.0, 6.0, 4.0, 1.0, 0.0, 0.0, 0.0, 1.0,
+    );
 
     let b = Matrix::transpose(&a);
-
 
     assert_float(b.m[0][0], 1.0);
     assert_float(b.m[0][1], 2.0);
@@ -583,7 +639,6 @@ fn test_matrix_transpose() {
     assert_float(b.m[3][3], 1.0);
 }
 
-
 #[test]
 fn test_matrix_identity_is_transpose() {
     let a = Matrix::new_identity_4x4();
@@ -602,9 +657,7 @@ fn test_matrix_determinant() {
 
 #[test]
 fn test_matrix_submatrix() {
-    let a = Matrix::new_matrix_3x3(1.0, 5.0, 0.0,
-                                   -3.0, 2.0, 7.0,
-                                   0.0, 6.0, -3.0);
+    let a = Matrix::new_matrix_3x3(1.0, 5.0, 0.0, -3.0, 2.0, 7.0, 0.0, 6.0, -3.0);
     let b = Matrix::sub_matrix(&a, 0, 2);
 
     assert_float(b.m[0][0], -3.0);
@@ -612,10 +665,9 @@ fn test_matrix_submatrix() {
     assert_float(b.m[1][0], 0.0);
     assert_float(b.m[1][1], 6.0);
 
-    let a = Matrix::new_matrix_4x4(-6.0, 1.0, 1.0, 6.0,
-                                   -8.0, 5.0, 8.0, 6.0,
-                                   -1.0, 0.0, 8.0, 2.0,
-                                   -7.0, 1.0, -1.0, 1.0);
+    let a = Matrix::new_matrix_4x4(
+        -6.0, 1.0, 1.0, 6.0, -8.0, 5.0, 8.0, 6.0, -1.0, 0.0, 8.0, 2.0, -7.0, 1.0, -1.0, 1.0,
+    );
     let b = Matrix::sub_matrix(&a, 2, 1);
 
     assert_float(b.m[0][0], -6.0);
@@ -631,12 +683,9 @@ fn test_matrix_submatrix() {
     assert_float(b.m[2][2], 1.0);
 }
 
-
 #[test]
 fn test_matrix_minor() {
-    let a = Matrix::new_matrix_3x3(3.0, 5.0, 0.0,
-                                   3.0, -1.0, -7.0,
-                                   6.0, -1.0, 5.0);
+    let a = Matrix::new_matrix_3x3(3.0, 5.0, 0.0, 3.0, -1.0, -7.0, 6.0, -1.0, 5.0);
     let b = Matrix::sub_matrix(&a, 1, 0);
     let det_b = Matrix::determinant(&b);
     let minor_a = Matrix::minor(&a, 1, 0);
@@ -647,9 +696,7 @@ fn test_matrix_minor() {
 
 #[test]
 fn test_matrix_cofactor() {
-    let a = Matrix::new_matrix_3x3(3.0, 5.0, 0.0,
-                                   3.0, -1.0, -7.0,
-                                   6.0, -1.0, 5.0);
+    let a = Matrix::new_matrix_3x3(3.0, 5.0, 0.0, 3.0, -1.0, -7.0, 6.0, -1.0, 5.0);
     let minor_a = Matrix::minor(&a, 0, 0);
     let cofactor_a = Matrix::cofactor(&a, 0, 0);
 
@@ -665,9 +712,7 @@ fn test_matrix_cofactor() {
 
 #[test]
 fn test_matrix_determinant_3x3() {
-    let a = Matrix::new_matrix_3x3(1.0, 2.0, 6.0,
-                                   -5.0, 8.0, -4.0,
-                                   2.0, 6.0, 4.0);
+    let a = Matrix::new_matrix_3x3(1.0, 2.0, 6.0, -5.0, 8.0, -4.0, 2.0, 6.0, 4.0);
 
     let cofactor_a1 = Matrix::cofactor(&a, 0, 0);
     let cofactor_a2 = Matrix::cofactor(&a, 0, 1);
@@ -684,10 +729,9 @@ fn test_matrix_determinant_3x3() {
 
 #[test]
 fn test_matrix_determinant_4x4() {
-    let a = Matrix::new_matrix_4x4(-2.0, -8.0, 3.0, 5.0,
-                                   -3.0, 1.0, 7.0, 3.0,
-                                   1.0, 2.0, -9.0, 6.0,
-                                   -6.0, 7.0, 7.0, -9.0);
+    let a = Matrix::new_matrix_4x4(
+        -2.0, -8.0, 3.0, 5.0, -3.0, 1.0, 7.0, 3.0, 1.0, 2.0, -9.0, 6.0, -6.0, 7.0, 7.0, -9.0,
+    );
 
     let cofactor_a1 = Matrix::cofactor(&a, 0, 0);
     let cofactor_a2 = Matrix::cofactor(&a, 0, 1);
@@ -704,10 +748,10 @@ fn test_matrix_determinant_4x4() {
     assert_float(det_a, -4071.0);
 
     let m_inv = Matrix::invert(&a).unwrap();
-    let m_expected = Matrix::new_matrix_4x4(-0.169492, 0.0621469, -0.135593, -0.163842,
-                                            -0.109801, 0.0967821, 0.0338983, -0.006141,
-                                            -0.0515844, 0.105871, -0.0847458, -0.0498649,
-                                            -0.0125276, 0.116188, 0.0508475, -0.0454434);
+    let m_expected = Matrix::new_matrix_4x4(
+        -0.169492, 0.0621469, -0.135593, -0.163842, -0.109801, 0.0967821, 0.0338983, -0.006141,
+        -0.0515844, 0.105871, -0.0847458, -0.0498649, -0.0125276, 0.116188, 0.0508475, -0.0454434,
+    );
 
     println!("m_inv = {:#?}", m_inv);
     println!("m_expected = {:#?}", m_expected);
@@ -715,40 +759,35 @@ fn test_matrix_determinant_4x4() {
     assert_matrix(&m_inv, &m_expected);
 }
 
-
 #[test]
 fn test_matrix_inversion1() {
-    let a = Matrix::new_matrix_4x4(6.0, 4.0, 4.0, 4.0,
-                                   5.0, 5.0, 7.0, 6.0,
-                                   4.0, -9.0, 3.0, -7.0,
-                                   9.0, 1.0, 7.0, -6.0);
+    let a = Matrix::new_matrix_4x4(
+        6.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 6.0, 4.0, -9.0, 3.0, -7.0, 9.0, 1.0, 7.0, -6.0,
+    );
 
     let det_a = Matrix::determinant(&a);
-    let a_inv = Matrix::new_matrix_4x4(0.315094, -0.181132, 0.0377358, -0.0150943,
-                                       -0.0528302, -0.0160377, -0.132075, 0.10283,
-                                       -0.292453, 0.259434, 0.0188679, 0.0424528,
-                                       0.122642, 0.0283019, 0.0566038, -0.122642);
+    let a_inv = Matrix::new_matrix_4x4(
+        0.315094, -0.181132, 0.0377358, -0.0150943, -0.0528302, -0.0160377, -0.132075, 0.10283,
+        -0.292453, 0.259434, 0.0188679, 0.0424528, 0.122642, 0.0283019, 0.0566038, -0.122642,
+    );
 
     assert_float(det_a, -2120.0);
     assert_matrix(&Matrix::invert(&a).unwrap(), &a_inv);
 
-    let a = Matrix::new_matrix_4x4(-4.0, 2.0, -2.0, -3.0,
-                                   9.0, 6.0, 2.0, 6.0,
-                                   0.0, -5.0, 1.0, -5.0,
-                                   0.0, 0.0, 0.0, 0.0);
+    let a = Matrix::new_matrix_4x4(
+        -4.0, 2.0, -2.0, -3.0, 9.0, 6.0, 2.0, 6.0, 0.0, -5.0, 1.0, -5.0, 0.0, 0.0, 0.0, 0.0,
+    );
 
     let det_a = Matrix::determinant(&a);
 
     assert_float(det_a, 0.0);
 }
 
-
 #[test]
 fn test_matrix_inversion2() {
-    let a = Matrix::new_matrix_4x4(-5.0, 2.0, 6.0, -8.0,
-                                   1.0, -5.0, 1.0, 8.0,
-                                   7.0, 7.0, -6.0, -7.0,
-                                   1.0, -3.0, 7.0, 4.0);
+    let a = Matrix::new_matrix_4x4(
+        -5.0, 2.0, 6.0, -8.0, 1.0, -5.0, 1.0, 8.0, 7.0, 7.0, -6.0, -7.0, 1.0, -3.0, 7.0, 4.0,
+    );
 
     // wolfram alpha  can use this {{-5.0, 2.0, 6.0, -8.},{1.0, -5.0, 1.0, 8.0},{7.0, 7.0, -6.0, -7.0},{1.0, -3.0, 7.0, 4.}}
 
@@ -787,13 +826,11 @@ fn test_matrix_inversion2() {
     assert_float(b.m[3][3], 0.30639);
 }
 
-
 #[test]
 fn test_matrix_inversion3() {
-    let a = Matrix::new_matrix_4x4(8.0, -5.0, 9.0, 2.0,
-                                   7.0, 5.0, 6.0, 1.0,
-                                   -6.0, 0.0, 9.0, 6.0,
-                                   -3.0, 0.0, -9.0, -4.0);
+    let a = Matrix::new_matrix_4x4(
+        8.0, -5.0, 9.0, 2.0, 7.0, 5.0, 6.0, 1.0, -6.0, 0.0, 9.0, 6.0, -3.0, 0.0, -9.0, -4.0,
+    );
 
     let b = Matrix::invert(&a).unwrap();
 
@@ -818,13 +855,11 @@ fn test_matrix_inversion3() {
     assert_float(b.m[3][3], -1.92308);
 }
 
-
 #[test]
 fn test_matrix_inversion4() {
-    let a = Matrix::new_matrix_4x4(9.0, 3.0, 0.0, 9.0,
-                                   -5.0, -2.0, -6.0, -3.0,
-                                   -4.0, 9.0, 6.0, 4.0,
-                                   -7.0, 6.0, 6.0, 2.0);
+    let a = Matrix::new_matrix_4x4(
+        9.0, 3.0, 0.0, 9.0, -5.0, -2.0, -6.0, -3.0, -4.0, 9.0, 6.0, 4.0, -7.0, 6.0, 6.0, 2.0,
+    );
 
     let b = Matrix::invert(&a).unwrap();
 
@@ -849,18 +884,15 @@ fn test_matrix_inversion4() {
     assert_float(b.m[3][3], 0.33333);
 }
 
-
 #[test]
 fn test_matrix_inversion5() {
-    let a = Matrix::new_matrix_4x4(3.0, -9.0, 7.0, 3.0,
-                                   3.0, -8.0, 2.0, -9.0,
-                                   -4.0, 4.0, 4.0, 1.0,
-                                   -6.0, 5.0, -1.0, 1.0);
+    let a = Matrix::new_matrix_4x4(
+        3.0, -9.0, 7.0, 3.0, 3.0, -8.0, 2.0, -9.0, -4.0, 4.0, 4.0, 1.0, -6.0, 5.0, -1.0, 1.0,
+    );
 
-    let b = Matrix::new_matrix_4x4(8.0, 2.0, 2.0, 2.0,
-                                   3.0, -1.0, 7.0, 0.0,
-                                   7.0, 0.0, 5.0, 4.0,
-                                   6.0, -2.0, 0.0, 5.0);
+    let b = Matrix::new_matrix_4x4(
+        8.0, 2.0, 2.0, 2.0, 3.0, -1.0, 7.0, 0.0, 7.0, 0.0, 5.0, 4.0, 6.0, -2.0, 0.0, 5.0,
+    );
 
     let c = &a * &b;
 
@@ -887,7 +919,6 @@ fn test_matrix_inversion5() {
     assert_float(a.m[3][3], a2.m[3][3]);
 }
 
-
 #[test]
 fn test_matrix_transformation() {
     let transform = Matrix::translation(5.0, -3.0, 2.0);
@@ -900,7 +931,6 @@ fn test_matrix_transformation() {
     assert_float(p_transformed.z, 7.0);
     assert!(Vector::is_point(&p_transformed));
 }
-
 
 #[test]
 fn test_matrix_transformation_invert() {
@@ -929,7 +959,6 @@ fn test_matrix_transformation_vector() {
     assert_float(v_transformed.z, v.z);
     assert!(Vector::is_vector(&v_transformed));
 }
-
 
 #[test]
 fn test_matrix_scale_point() {
@@ -1007,7 +1036,6 @@ fn test_matrix_rotation_x() {
     assert!(Vector::is_point(&full));
 }
 
-
 #[test]
 fn test_matrix_rotation_x_invert() {
     let p = Vector::new_point(0.0, 1.0, 0.0);
@@ -1018,14 +1046,13 @@ fn test_matrix_rotation_x_invert() {
 
     let sqrt2_half = SQRT_2 / 2.0;
     let expected = Vector::new_point(0.0, sqrt2_half, -sqrt2_half);
-    assert_tuple(&half, &expected);
+    assert_vector(&half, &expected);
 
     assert_float(half.x, 0.0);
     assert_float(half.y, sqrt2_half);
     assert_float(half.z, -sqrt2_half);
     assert!(Vector::is_point(&half));
 }
-
 
 #[test]
 fn test_matrix_rotation_y() {
@@ -1039,7 +1066,7 @@ fn test_matrix_rotation_y() {
     let sqrt2_half = SQRT_2 / 2.0;
 
     let half_expected = Vector::new_point(sqrt2_half, 0.0, sqrt2_half);
-    assert_tuple(&half, &half_expected);
+    assert_vector(&half, &half_expected);
 
     assert_float(half.x, sqrt2_half);
     assert_float(half.y, 0.0);
@@ -1047,14 +1074,13 @@ fn test_matrix_rotation_y() {
     assert!(Vector::is_point(&half));
 
     let full_expected = Vector::new_point(1.0, 0.0, 0.0);
-    assert_tuple(&full, &full_expected);
+    assert_vector(&full, &full_expected);
 
     assert_float(full.x, 1.0);
     assert_float(full.y, 0.0);
     assert_float(full.z, 0.0);
     assert!(Vector::is_point(&full));
 }
-
 
 #[test]
 fn test_matrix_rotation_z() {
@@ -1068,7 +1094,7 @@ fn test_matrix_rotation_z() {
     let sqrt2_half = SQRT_2 / 2.0;
 
     let half_expected = Vector::new_point(-sqrt2_half, sqrt2_half, 0.0);
-    assert_tuple(&half, &half_expected);
+    assert_vector(&half, &half_expected);
 
     assert_float(half.x, -sqrt2_half);
     assert_float(half.y, sqrt2_half);
@@ -1076,14 +1102,13 @@ fn test_matrix_rotation_z() {
     assert!(Vector::is_point(&half));
 
     let full_expected = Vector::new_point(-1.0, 0.0, 0.0);
-    assert_tuple(&full, &full_expected);
+    assert_vector(&full, &full_expected);
 
     assert_float(full.x, -1.0);
     assert_float(full.y, 0.0);
     assert_float(full.z, 0.0);
     assert!(Vector::is_point(&full));
 }
-
 
 #[test]
 fn test_matrix_shear1() {
@@ -1095,7 +1120,6 @@ fn test_matrix_shear1() {
     assert_float(p_transformed.y, 3.0);
     assert_float(p_transformed.z, 4.0);
     assert!(Vector::is_point(&p_transformed));
-
 
     let transform = Matrix::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
     let p = Vector::new_point(2.0, 3.0, 4.0);
@@ -1143,7 +1167,6 @@ fn test_matrix_shear1() {
     assert!(Vector::is_point(&p_transformed));
 }
 
-
 #[test]
 fn test_matrix_transformation_sequential() {
     let p = Vector::new_point(1.0, 0.0, 1.0);
@@ -1171,14 +1194,12 @@ fn test_matrix_transformation_sequential() {
     assert!(Vector::is_point(&p4));
 }
 
-
 #[test]
 fn test_matrix_transformation_chained() {
     let p = Vector::new_point(1.0, 0.0, 1.0);
     let a = Matrix::rotate_x(PI / 2.0);
     let b = Matrix::scale(5.0, 5.0, 5.0);
     let c = Matrix::translation(10.0, 5.0, 7.0);
-
 
     let t = &(&c * &b) * &a;
 
@@ -1189,7 +1210,6 @@ fn test_matrix_transformation_chained() {
     assert_float(p2.z, 7.0);
     assert!(Vector::is_point(&p2));
 }
-
 
 #[test]
 fn test_matrix_view_transform_default_direction() {
@@ -1203,7 +1223,6 @@ fn test_matrix_view_transform_default_direction() {
     assert_matrix(&v, &v_expected);
 }
 
-
 #[test]
 fn test_matrix_view_transform_positive_z_direction() {
     let from = Vector::new_point(0.0, 0.0, 0.0);
@@ -1215,7 +1234,6 @@ fn test_matrix_view_transform_positive_z_direction() {
 
     assert_matrix(&v, &v_expected);
 }
-
 
 #[test]
 fn test_matrix_view_transform_translation() {
@@ -1237,17 +1255,10 @@ fn test_matrix_view_transform_arbitrary() {
 
     let v = Matrix::view_transform(&from, &to, &up);
 
-    let v_expected = Matrix::new_matrix_4x4(-0.50709, 0.50709, 0.67612, -2.36643,
-                                            0.76772, 0.60609, 0.12122, -2.82843,
-                                            -0.35857, 0.59761, -0.71714, 0.0,
-                                            0.0, 0.0, 0.0, 1.0);
+    let v_expected = Matrix::new_matrix_4x4(
+        -0.50709, 0.50709, 0.67612, -2.36643, 0.76772, 0.60609, 0.12122, -2.82843, -0.35857,
+        0.59761, -0.71714, 0.0, 0.0, 0.0, 0.0, 1.0,
+    );
 
     assert_matrix(&v, &v_expected);
 }
-
-
-
-
-
-
-
