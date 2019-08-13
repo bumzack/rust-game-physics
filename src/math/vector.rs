@@ -13,7 +13,7 @@ pub const ORIGIN: Vector = Vector {
     w: 1.0,
 };
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub struct Vector {
     pub x: f32,
     pub y: f32,

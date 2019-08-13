@@ -1,4 +1,4 @@
-use crate::force::particle_force_generator::ParticleForceGenerator;
+use crate::force::particle_force_generator::ParticleForceGeneratorOps;
 use crate::math::common::assert_vector;
 use crate::math::vector::Vector;
 use crate::math::vector::VectorOps;
@@ -8,16 +8,16 @@ pub struct ParticleForceGravity {
     gravity: Vector,
 }
 
-impl ParticleForceGenerator for ParticleForceGravity {
+impl<'a> ParticleForceGeneratorOps for ParticleForceGravity  {
     fn update_force(&self, particle: &mut Particle, duration: f32) {
-        let m = particle.mass;
-        let f = &self.gravity * m;
+        if !particle.has_finite_mass() { return; }
+        let f = &self.gravity * particle.get_mass();
         particle.add_force(&f);
     }
 }
 
-impl ParticleForceGravity {
-    pub fn new() -> ParticleForceGravity {
+impl<'a> ParticleForceGravity  {
+    pub fn new() -> ParticleForceGravity  {
         ParticleForceGravity {
             gravity: Vector::new_vector(0.0, 10.0, 0.0),
         }
