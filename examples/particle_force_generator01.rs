@@ -2,9 +2,11 @@ use rust_game_physics::math::vector::Vector;
 use rust_game_physics::math::vector::VectorOps;
 use rust_game_physics::particle::particle::Particle;
 use rust_game_physics::particle::particle::ParticleOps;
+use rust_game_physics::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
+use rust_game_physics::force::particle_force_gravity::ParticleForceGravity;
 
 fn main() {
-    let pfg  = ParticleForceGenerator::new();
+    let pfg = ParticleForceGravity::new();
 
     let v1 = Vector::new_vector(1.0, 2.0, 3.0);
     let mut p1 = Particle::new();
@@ -17,7 +19,8 @@ fn main() {
     p2.set_velocity(v2);
 
 
+    let mut registry = ParticleForceRegistry::new();
 
-
-
+    registry.add(&p1, &pfg);
+    registry.add(&p2, &pfg);
 }

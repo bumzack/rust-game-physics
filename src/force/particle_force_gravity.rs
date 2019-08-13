@@ -1,10 +1,26 @@
 use crate::math::common::assert_vector;
 use crate::particle::particle::{Particle, ParticleOps};
+use crate::force::particle_force_generator::ParticleForceGenerator;
+use crate::math::vector::Vector;
+use crate::math::vector::VectorOps;
 
-pub trait ParticleForceGenerator {
-    fn update_force(&self, mut particle: &mut Particle, duration: f32);
+pub struct ParticleForceGravity {
+    gravity: Vector,
 }
 
+impl ParticleForceGenerator for ParticleForceGravity {
+    fn update_force(&self, mut particle: &mut Particle, duration: f32) {
+        particle.add_force(&(&self.gravity * particle.get_mass()));
+    }
+}
+
+impl ParticleForceGravity {
+    pub fn new() -> ParticleForceGravity {
+        ParticleForceGravity {
+            gravity: Vector::new_vector(0.0, 10.0, 0.0),
+        }
+    }
+}
 //
 //impl Force {
 //    // seems good default values?

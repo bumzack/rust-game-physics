@@ -1,6 +1,4 @@
 pub mod particle_force_generator;
 pub mod particle_force_registry;
+pub mod particle_force_gravity;
 
-
-// only in this mod relevant
-mod particle_force_registry_entry;
