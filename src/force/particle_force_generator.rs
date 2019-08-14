@@ -1,16 +1,19 @@
-use crate::force::ParticleIdx;
+use crate::force::particle_force_registry::ParticleForceRegistry;
+use crate::force::particle_force_types::ParticleContainer;
 use crate::math::common::assert_vector;
 use crate::particle::particle::{Particle, ParticleOps};
-use crate::force::particle_force_registry::ParticleForceRegistry;
 
 pub trait ParticleForceGeneratorOps: ParticleForceGeneratorOpsClone {
-    // pub trait ParticleForceGeneratorOps {
-    fn update_force(&self, particle: &mut Particle, duration: f32,  all_particles: &Vec<Particle>);
-    // fn update_force_two_particles(&self, particle: &mut Particle, other_particle: &Particle, duration: f32) { println!("DEFAULT update_force_two_particles ") }
-    //    fn needs_other_particle(&self) -> bool { false }
-    //    fn get_other_particle_idx(&self) -> ParticleIdx { 0 }
+    fn update_force(
+        &self,
+        particle: &mut Particle,
+        duration: f32,
+        all_particles: &ParticleContainer,
+    );
 }
 
+// this is from some clever guy on the internet - either stackoverflow or rust lang forum
+// in case you get a "trait Clone not Implement for trait XXX"  - not struct XXX
 pub trait ParticleForceGeneratorOpsClone {
     fn clone_box(&self) -> Box<ParticleForceGeneratorOps>;
 }

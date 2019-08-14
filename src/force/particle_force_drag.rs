@@ -1,9 +1,11 @@
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
+use crate::force::particle_force_registry::ParticleForceRegistry;
 use crate::math::common::assert_vector;
 use crate::math::vector::Vector;
 use crate::math::vector::VectorOps;
 use crate::particle::particle::{Particle, ParticleOps};
-use crate::force::particle_force_registry::ParticleForceRegistry;
+
+use crate::force::particle_force_types::ParticleContainer;
 
 #[derive(Clone)]
 pub struct ParticleForceDrag {
@@ -12,7 +14,12 @@ pub struct ParticleForceDrag {
 }
 
 impl<'a> ParticleForceGeneratorOps for ParticleForceDrag {
-    fn update_force(&self, particle: &mut Particle, duration: f32,  all_particles: &Vec<Particle>) {
+    fn update_force(
+        &self,
+        particle: &mut Particle,
+        duration: f32,
+        all_particles: &ParticleContainer,
+    ) {
         let mut f = Vector::new_vector_from(particle.get_velocity());
         let mut drag_coeff = f.magnitude();
         drag_coeff = self.k1 * drag_coeff + self.k2 * drag_coeff * drag_coeff;

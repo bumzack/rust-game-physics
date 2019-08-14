@@ -1,15 +1,17 @@
 use std::collections::HashMap;
-use std::rc::Rc;
 
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
-use crate::force::{ParticleForceGeneratorOpsIdx, ParticleIdx};
+use crate::force::particle_force_types::{
+    ParticleContainer, ParticleForceGeneratorOpsContainer, ParticleForceGeneratorOpsIdx,
+    ParticleIdx,
+};
 use crate::math::common::assert_vector;
 use crate::particle::particle::{Particle, ParticleOps};
 
 #[derive(Clone)]
 pub struct ParticleForceRegistry {
-    particle_force_generators: Vec<Box<ParticleForceGeneratorOps>>,
-    particles: Vec<Particle>,
+    particle_force_generators: ParticleForceGeneratorOpsContainer,
+    particles: ParticleContainer,
     registry: HashMap<ParticleForceGeneratorOpsIdx, Vec<ParticleIdx>>,
 }
 
@@ -75,8 +77,6 @@ impl ParticleForceRegistryOps for ParticleForceRegistry {
     fn update_forces(&mut self, duration: f32) {
         for (gen_idx, particles_indices) in self.registry.iter() {
             for p_idx in particles_indices.iter() {
-
-
                 // TODO: here the BorrowChecker is a PITA
                 // we would like to do
                 //                let mut p = &mut self.particles.get_mut(*p_idx).unwrap();
@@ -89,10 +89,12 @@ impl ParticleForceRegistryOps for ParticleForceRegistry {
                 let particle_force_generators_clone = self.particle_force_generators.clone();
                 let particles_clone = self.particles.clone();
 
-
                 let pfg = particle_force_generators_clone.get(*gen_idx).unwrap();
-                let mut p = &mut self.particles.get_mut(*p_idx).unwrap();
-                println!("update_forces            gen_idx = {}, p_idx = {}", gen_idx, p_idx);
+                let p = &mut self.particles.get_mut(*p_idx).unwrap();
+                println!(
+                    "update_forces            gen_idx = {}, p_idx = {}",
+                    gen_idx, p_idx
+                );
                 pfg.update_force(p, duration, &particles_clone);
             }
         }

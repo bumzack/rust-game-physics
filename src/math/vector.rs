@@ -40,6 +40,14 @@ pub trait VectorOps {
     fn is_vector(a: &Vector) -> bool;
 
     fn reflect(v: &Vector, n: &Vector) -> Vector;
+
+    fn get_x(self) -> f32;
+    fn get_y(self) -> f32;
+    fn get_z(self) -> f32;
+
+    fn set_x(&mut self, x: f32);
+    fn set_y(&mut self, y: f32);
+    fn set_z(&mut self, z: f32);
 }
 
 impl VectorOps for Vector {
@@ -114,6 +122,30 @@ impl VectorOps for Vector {
 
     fn reflect(v: &Vector, n: &Vector) -> Vector {
         v - &((n * 2.0) * (v ^ n))
+    }
+
+    fn get_x(self) -> f32 {
+        self.x
+    }
+
+    fn get_y(self) -> f32 {
+        self.y
+    }
+
+    fn get_z(self) -> f32 {
+        self.z
+    }
+
+    fn set_x(&mut self, x: f32) {
+        self.x = x;
+    }
+
+    fn set_y(&mut self, y: f32) {
+        self.y = y;
+    }
+
+    fn set_z(&mut self, z: f32) {
+        self.z = z;
     }
 }
 

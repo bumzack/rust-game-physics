@@ -7,13 +7,13 @@ use crate::math::vector::VectorOps;
 use crate::particle::particle::{Particle, ParticleOps};
 
 #[derive(Clone)]
-pub struct ParticleForceSpring {
+pub struct ParticleForceElasticBungeeSpring {
     other: Option<ParticleIdx>,
     spring_constant: f32,
     rest_length: f32,
 }
 
-impl ParticleForceGeneratorOps for ParticleForceSpring {
+impl ParticleForceGeneratorOps for ParticleForceElasticBungeeSpring {
     fn update_force(
         &self,
         particle: &mut Particle,
@@ -25,8 +25,11 @@ impl ParticleForceGeneratorOps for ParticleForceSpring {
         f = &f - other_particle.get_position();
 
         let mut magnitude = f.magnitude();
-        magnitude = (magnitude - self.rest_length).abs();
-        magnitude = magnitude * self.spring_constant;
+        if magnitude <= self.rest_length {
+            return;
+        }
+
+        magnitude = (self.rest_length - magnitude) * self.spring_constant;
 
         // calc. final force and apply
         f.normalize();
@@ -40,9 +43,9 @@ impl ParticleForceGeneratorOps for ParticleForceSpring {
     }
 }
 
-impl ParticleForceSpring {
-    pub fn new() -> ParticleForceSpring {
-        ParticleForceSpring {
+impl ParticleForceElasticBungeeSpring {
+    pub fn new() -> ParticleForceElasticBungeeSpring {
+        ParticleForceElasticBungeeSpring {
             other: None,
             spring_constant: 0.0,
             rest_length: 0.0,

@@ -39,7 +39,6 @@ fn main() {
 
     pfg4.set_other(p1_idx);
 
-
     let pfg1_idx = registry.add_particle_force_generator(Box::new(pfg1));
     let pfg2_idx = registry.add_particle_force_generator(Box::new(pfg2));
     let pfg3_idx = registry.add_particle_force_generator(Box::new(pfg3));
@@ -47,7 +46,6 @@ fn main() {
 
     registry.add_force_for_particle(p1_idx, pfg1_idx);
     registry.add_force_for_particle(p2_idx, pfg2_idx);
-
 
     registry.add_force_for_particle(p2_idx, pfg4_idx);
 
@@ -153,8 +151,6 @@ fn main() {
         "p2 velocity = {:?}",
         registry.get_particle(p2_idx).get_velocity()
     );
-
-
 
     // after all particles and generators are added to the registry, set the registry in the spring generator :-(((
 
