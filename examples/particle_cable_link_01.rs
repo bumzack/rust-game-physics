@@ -1,7 +1,9 @@
+use rust_game_physics::collision::particle_cable_link::ParticleCableLink;
 use rust_game_physics::collision::particle_contact::{ParticleContact, ParticleContactOps};
 use rust_game_physics::collision::particle_contact_resolver::{
     ParticleContactResolver, ParticleContactResolverOps,
 };
+use rust_game_physics::collision::particle_link::ParticleLinkOps;
 use rust_game_physics::force::particle_force_anchored_spring::ParticleForceAnchoredSpring;
 use rust_game_physics::force::particle_force_buoyancy_spring::ParticleForceBuoyancySpring;
 use rust_game_physics::force::particle_force_drag::ParticleForceDrag;
@@ -116,4 +118,18 @@ fn main() {
     pcr.set_iterations(10);
     let l = pc_arr.len();
     pcr.resolve_contacts(&mut pc_arr, l, 2.0, &mut registry);
+
+    let mut cable_link = ParticleCableLink::new();
+    cable_link.set_particle1(p1_idx);
+    cable_link.set_particle2(p2_idx);
+    cable_link.set_max_lengths(12.0);
+    cable_link.set_restitutiond(12.0);
+
+    let mut pc3 = ParticleContact::new();
+    cable_link.add_contact(&mut pc3, 2, &registry);
+
+    pc_arr.push(pc3);
+
+    pcr.resolve_contacts(&mut pc_arr, l, 2.0, &mut registry);
+
 }

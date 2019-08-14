@@ -14,11 +14,23 @@ pub struct ParticleContactResolver {
     iterations_used: usize,
 }
 pub trait ParticleContactResolverOps {
-    fn resolve_contacts(&mut self, contact_array: &mut ParticleContactsContainer, num_contacts: usize, duration: f32, registry: &mut ParticleForceRegistry);
+    fn resolve_contacts(
+        &mut self,
+        contact_array: &mut ParticleContactsContainer,
+        num_contacts: usize,
+        duration: f32,
+        registry: &mut ParticleForceRegistry,
+    );
 }
 
 impl ParticleContactResolverOps for ParticleContactResolver {
-    fn resolve_contacts(&mut self, contact_array: &mut ParticleContactsContainer, num_contacts: usize, duration: f32, registry: &mut ParticleForceRegistry) {
+    fn resolve_contacts(
+        &mut self,
+        contact_array: &mut ParticleContactsContainer,
+        num_contacts: usize,
+        duration: f32,
+        registry: &mut ParticleForceRegistry,
+    ) {
         self.iterations_used = 0;
 
         while self.iterations_used < self.iterations {
@@ -35,7 +47,9 @@ impl ParticleContactResolverOps for ParticleContactResolver {
                     max_index = i;
                 }
             }
-            if max_index == num_contacts { break; }
+            if max_index == num_contacts {
+                break;
+            }
             contact_array[max_index].resolve(duration, registry);
 
             self.iterations_used += 1;

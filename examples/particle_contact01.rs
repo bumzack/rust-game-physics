@@ -90,8 +90,8 @@ fn main() {
     pc.set_contact_normal(n);
     pc.set_penetration(2.0);
     pc.set_restitution(3.0);
-    pc.set_particle1(p1_idx);
-    pc.set_particle2(p2_idx);
+    pc.set_particle0(p1_idx);
+    pc.set_particle1(p2_idx);
 
     pc.resolve(2.0, &mut registry);
 }

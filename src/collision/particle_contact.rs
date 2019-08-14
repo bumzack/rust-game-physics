@@ -22,13 +22,8 @@ pub trait ParticleContactOps {
 
     fn calc_total_inverse_mass(&self, registry: &ParticleForceRegistry) -> f32;
 
-    fn resolve_interpenetration(
-        &mut self,
-        duration: f32,
-        registry: &mut ParticleForceRegistry,
-    );
+    fn resolve_interpenetration(&mut self, duration: f32, registry: &mut ParticleForceRegistry);
 }
-
 
 impl ParticleContactOps for ParticleContact {
     fn resolve(&mut self, duration: f32, registry: &mut ParticleForceRegistry) {
@@ -124,11 +119,7 @@ impl ParticleContactOps for ParticleContact {
         total_inverse_mass
     }
 
-    fn resolve_interpenetration(
-        &mut self,
-        duration: f32,
-        registry: &mut ParticleForceRegistry,
-    ) {
+    fn resolve_interpenetration(&mut self, duration: f32, registry: &mut ParticleForceRegistry) {
         // if there is no interpenetration -> skip
         if self.penetration <= 0.0 {
             return;
@@ -170,12 +161,12 @@ impl ParticleContact {
         }
     }
 
-    pub fn set_particle1(&mut self, p1: ParticleIdx) {
-        self.particle[0] = Some(p1);
+    pub fn set_particle0(&mut self, p0: ParticleIdx) {
+        self.particle[0] = Some(p0);
     }
 
-    pub fn set_particle2(&mut self, p2: ParticleIdx) {
-        self.particle[1] = Some(p2);
+    pub fn set_particle1(&mut self, p1: ParticleIdx) {
+        self.particle[1] = Some(p1);
     }
 
     pub fn set_restitution(&mut self, restitution: f32) {
