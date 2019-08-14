@@ -1,10 +1,12 @@
 use std::collections::HashMap;
+use std::rc::Rc;
 
 use crate::force::{ParticleForceGeneratorOpsIdx, ParticleIdx};
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
 use crate::math::common::assert_vector;
 use crate::particle::particle::{Particle, ParticleOps};
 
+#[derive(Clone)]
 pub struct ParticleForceRegistry {
     particle_force_generators: Vec<Box<ParticleForceGeneratorOps>>,
     particles: Vec<Particle>,
@@ -58,10 +60,10 @@ impl ParticleForceRegistryOps for ParticleForceRegistry {
     fn update_forces(&mut self, duration: f32) {
         for (gen_idx, particles_indices) in self.registry.iter() {
             for p_idx in particles_indices.iter() {
-                println!("updated forces  gen_idx = {}, p_idx = {}", gen_idx, p_idx);
-                let mut p = &mut self.particles[*p_idx];
-                let pfg = &self.particle_force_generators[*gen_idx];
-                pfg.update_force(&mut p, duration);
+                let pfg = &self.particle_force_generators.get(*gen_idx).unwrap();
+                let mut p = &mut self.particles.get_mut(*p_idx).unwrap();
+                println!("update_forces            gen_idx = {}, p_idx = {}", gen_idx, p_idx);
+                pfg.update_force(p, duration);
             }
         }
     }

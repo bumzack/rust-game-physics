@@ -4,18 +4,23 @@ use rust_game_physics::force::particle_force_gravity::ParticleForceGravity;
 use rust_game_physics::force::particle_force_registry::{
     ParticleForceRegistry, ParticleForceRegistryOps,
 };
+use rust_game_physics::force::particle_force_spring::ParticleForceSpring;
 use rust_game_physics::math::vector::Vector;
 use rust_game_physics::math::vector::VectorOps;
 use rust_game_physics::particle::particle::Particle;
 use rust_game_physics::particle::particle::ParticleOps;
 
 fn main() {
+    let mut registry = ParticleForceRegistry::new();
+
     let pfg1 = ParticleForceGravity::new();
     let pfg2 = ParticleForceGravity::new();
 
     let mut pfg3 = ParticleForceDrag::new();
     pfg3.set_drag_k1(0.95);
     pfg3.set_drag_k2(0.5);
+
+    let mut pfg4 = ParticleForceSpring::new();
 
     let v1 = Vector::new_vector(1.0, 2.0, 3.0);
     let mut p1 = Particle::new();
@@ -29,7 +34,6 @@ fn main() {
     p2.set_velocity(v2);
     p2.set_id(2);
 
-    let mut registry = ParticleForceRegistry::new();
 
     let p1_idx = registry.add_particle(p1);
     let p2_idx = registry.add_particle(p2);
@@ -37,9 +41,17 @@ fn main() {
     let pfg1_idx = registry.add_particle_force_generator(Box::new(pfg1));
     let pfg2_idx = registry.add_particle_force_generator(Box::new(pfg2));
     let pfg3_idx = registry.add_particle_force_generator(Box::new(pfg3));
+    let pfg4_idx = registry.add_particle_force_generator(Box::new(pfg4));
 
     registry.add_force_for_particle(p1_idx, pfg1_idx);
     registry.add_force_for_particle(p2_idx, pfg2_idx);
+
+
+    // after all particles and generators are added to the registry, set the registry in the spring generator :-(((
+    pfg4.set_registry(registry.clone());
+
+
+
 
 
     println!("p1 position = {:?}", registry.get_particle(p1_idx).get_position());
@@ -96,6 +108,29 @@ fn main() {
     println!("p2 shoudl be different from p1");
     println!("p1 position = {:?}", registry.get_particle(p1_idx).get_position());
     println!("p1 velocity = {:?}", registry.get_particle(p1_idx).get_velocity());
+    println!("p2 position = {:?}", registry.get_particle(p2_idx).get_position());
+    println!("p2 velocity = {:?}", registry.get_particle(p2_idx).get_velocity());
+
+
+    pfg4.set_other(p1_idx);
+    registry.add_force_for_particle(p2_idx, pfg4_idx);
+
+    // after all particles and generators are added to the registry, set the registry in the spring generator :-(((
+    pfg4.set_registry(registry.clone());
+
+
+
+    println!("ADDED spring to p2");
+    println!("");
+    registry.update_forces(1.0);
+    println!("");
+    println!("");
+    // registry.get_particle_mut(p1_idx).integrate(2.0);
+    registry.get_particle_mut(p2_idx).integrate(2.0);
+    // println!("");
+    println!("");
+
+    println!("p2 shoudl be different from above");
     println!("p2 position = {:?}", registry.get_particle(p2_idx).get_position());
     println!("p2 velocity = {:?}", registry.get_particle(p2_idx).get_velocity());
 }
