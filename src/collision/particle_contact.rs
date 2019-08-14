@@ -14,23 +14,29 @@ pub struct ParticleContact {
     particle_movement: Vec<Option<Vector>>,
 }
 
-impl ParticleContact {
-    pub fn new() -> ParticleContact {
-        ParticleContact {
-            particle: vec![None; 2],
-            restitution: 0.0,
-            penetration: 0.0,
-            contact_normal: Vector::new_vector(0.0, 0.0, 0.0),
-            particle_movement: vec![None; 2],
-        }
-    }
+pub trait ParticleContactOps {
+    fn resolve(&mut self, duration: f32, registry: &mut ParticleForceRegistry);
+    fn calculate_separating_velocity(&self, registry: &mut ParticleForceRegistry) -> f32;
 
-    pub fn resolve(&mut self, duration: f32, registry: &mut ParticleForceRegistry) {
+    fn resolve_velocity(&self, duration: f32, registry: &mut ParticleForceRegistry);
+
+    fn calc_total_inverse_mass(&self, registry: &ParticleForceRegistry) -> f32;
+
+    fn resolve_interpenetration(
+        &mut self,
+        duration: f32,
+        registry: &mut ParticleForceRegistry,
+    );
+}
+
+
+impl ParticleContactOps for ParticleContact {
+    fn resolve(&mut self, duration: f32, registry: &mut ParticleForceRegistry) {
         self.resolve_velocity(duration, registry);
         self.resolve_interpenetration(duration, registry);
     }
 
-    pub fn calculate_separating_velocity(&self, registry: &mut ParticleForceRegistry) -> f32 {
+    fn calculate_separating_velocity(&self, registry: &mut ParticleForceRegistry) -> f32 {
         let p0 = registry.get_particle(self.particle[0].unwrap());
         let mut relative_velocity = Vector::new_vector_from(p0.get_velocity());
 
@@ -118,7 +124,7 @@ impl ParticleContact {
         total_inverse_mass
     }
 
-    pub fn resolve_interpenetration(
+    fn resolve_interpenetration(
         &mut self,
         duration: f32,
         registry: &mut ParticleForceRegistry,
@@ -151,6 +157,18 @@ impl ParticleContact {
             registry.set_velocity(self.particle[1].unwrap(), p1_position_new);
         }
     }
+}
+
+impl ParticleContact {
+    pub fn new() -> ParticleContact {
+        ParticleContact {
+            particle: vec![None; 2],
+            restitution: 0.0,
+            penetration: 0.0,
+            contact_normal: Vector::new_vector(0.0, 0.0, 0.0),
+            particle_movement: vec![None; 2],
+        }
+    }
 
     pub fn set_particle1(&mut self, p1: ParticleIdx) {
         self.particle[0] = Some(p1);
@@ -166,6 +184,10 @@ impl ParticleContact {
 
     pub fn set_penetration(&mut self, penetration: f32) {
         self.penetration = penetration;
+    }
+
+    pub fn get_penetration(&self) -> f32 {
+        self.penetration
     }
 
     pub fn set_contact_normal(&mut self, contact_normal: Vector) {
