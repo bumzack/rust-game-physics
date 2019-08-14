@@ -51,6 +51,13 @@ impl ParticleForceSpring {
     pub fn get_other(&self) -> ParticleIdx {
         self.other.unwrap()
     }
+
+    pub fn set_spring_constant(&mut self, spring_constant: f32)  {
+        self.spring_constant = spring_constant;
+    }
+    pub fn set_rest_length(&mut self, rest_length: f32)  {
+        self.rest_length= rest_length;
+    }
 }
 
 // TODO
