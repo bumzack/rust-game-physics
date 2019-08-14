@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use crate::force::{ParticleForceGeneratorOpsIdx, ParticleIdx};
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
+use crate::force::{ParticleForceGeneratorOpsIdx, ParticleIdx};
 use crate::math::common::assert_vector;
 use crate::particle::particle::{Particle, ParticleOps};
 
@@ -15,20 +15,32 @@ pub struct ParticleForceRegistry {
 
 pub trait ParticleForceRegistryOps {
     fn add_particle(&mut self, p: Particle) -> ParticleIdx;
-    fn add_particle_force_generator(&mut self, g: Box<ParticleForceGeneratorOps>) -> ParticleForceGeneratorOpsIdx;
+
+    fn add_particle_force_generator(
+        &mut self,
+        g: Box<ParticleForceGeneratorOps>,
+    ) -> ParticleForceGeneratorOpsIdx;
 
     fn add_force_for_particle(&mut self, p_idx: ParticleIdx, g_idx: ParticleForceGeneratorOpsIdx);
 
-
     // fn remove(&mut self,  gen:vPFG);
     fn clear(&mut self);
+
     fn update_forces(&mut self, duration: f32);
 
     fn get_particle(&self, idx: ParticleIdx) -> &Particle;
+
     fn get_particle_mut(&mut self, idx: ParticleIdx) -> &mut Particle;
 
-    fn get_particle_force_generators(&self, idx: ParticleForceGeneratorOpsIdx) -> &Box<ParticleForceGeneratorOps>;
-    fn get_particle_force_generators_mut(&mut self, idx: ParticleForceGeneratorOpsIdx) -> &mut Box<ParticleForceGeneratorOps>;
+    fn get_particle_force_generators(
+        &self,
+        idx: ParticleForceGeneratorOpsIdx,
+    ) -> &ParticleForceGeneratorOps;
+
+    fn get_particle_force_generators_mut(
+        &mut self,
+        idx: ParticleForceGeneratorOpsIdx,
+    ) -> &mut ParticleForceGeneratorOps;
 }
 
 impl ParticleForceRegistryOps for ParticleForceRegistry {
@@ -37,7 +49,10 @@ impl ParticleForceRegistryOps for ParticleForceRegistry {
         self.particles.len() - 1
     }
 
-    fn add_particle_force_generator(&mut self, g: Box<ParticleForceGeneratorOps>) -> ParticleForceGeneratorOpsIdx {
+    fn add_particle_force_generator(
+        &mut self,
+        g: Box<ParticleForceGeneratorOps>,
+    ) -> ParticleForceGeneratorOpsIdx {
         self.particle_force_generators.push(g);
         self.particle_force_generators.len() - 1
     }
@@ -60,10 +75,25 @@ impl ParticleForceRegistryOps for ParticleForceRegistry {
     fn update_forces(&mut self, duration: f32) {
         for (gen_idx, particles_indices) in self.registry.iter() {
             for p_idx in particles_indices.iter() {
-                let pfg = &self.particle_force_generators.get(*gen_idx).unwrap();
+
+
+                // TODO: here the BorrowChecker is a PITA
+                // we would like to do
+                //                let mut p = &mut self.particles.get_mut(*p_idx).unwrap();
+                //                println!("update_forces            gen_idx = {}, p_idx = {}", gen_idx, p_idx);
+                //                pfg.update_force(p, duration, &self);        // the &self is ugly too, we need a way to pass the "other" particle to the update_force for springs ..
+                // --------------------------------------
+
+                // instead we clone the force_generators and particles
+                // pass the clone to the mehtod, so it has access to the "other" particle
+                let particle_force_generators_clone = self.particle_force_generators.clone();
+                let particles_clone = self.particles.clone();
+
+
+                let pfg = particle_force_generators_clone.get(*gen_idx).unwrap();
                 let mut p = &mut self.particles.get_mut(*p_idx).unwrap();
                 println!("update_forces            gen_idx = {}, p_idx = {}", gen_idx, p_idx);
-                pfg.update_force(p, duration);
+                pfg.update_force(p, duration, &particles_clone);
             }
         }
     }
@@ -77,13 +107,16 @@ impl ParticleForceRegistryOps for ParticleForceRegistry {
         &mut self.particles[idx]
     }
 
-    fn get_particle_force_generators(&self, idx: ParticleForceGeneratorOpsIdx) -> &Box<ParticleForceGeneratorOps> {
+    fn get_particle_force_generators(
+        &self,
+        idx: ParticleForceGeneratorOpsIdx,
+    ) -> &ParticleForceGeneratorOps {
         // TODO: index check?
-        &self.particle_force_generators[idx]
+        &*self.particle_force_generators[idx]
     }
 
-    fn get_particle_force_generators_mut(&mut self, idx: usize) -> &mut Box<ParticleForceGeneratorOps> {
-        &mut self.particle_force_generators[idx]
+    fn get_particle_force_generators_mut(&mut self, idx: usize) -> &mut ParticleForceGeneratorOps {
+        &mut *self.particle_force_generators[idx]
     }
 }
 

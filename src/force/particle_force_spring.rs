@@ -8,15 +8,14 @@ use crate::particle::particle::{Particle, ParticleOps};
 
 #[derive(Clone)]
 pub struct ParticleForceSpring {
-    other: ParticleIdx,
+    other: Option<ParticleIdx>,
     spring_constant: f32,
     rest_length: f32,
-    registry: Option<ParticleForceRegistry>,
 }
 
 impl ParticleForceGeneratorOps for ParticleForceSpring {
-    fn update_force(&self, particle: &mut Particle, duration: f32) {
-        let other_particle = self.registry.as_ref().unwrap().get_particle(self.other);
+    fn update_force(&self, particle: &mut Particle, duration: f32, all_particles: &Vec<Particle>) {
+        let other_particle = all_particles[self.other.unwrap()];
         let mut f = Vector::new_vector_from(particle.get_position());
         f = &f - other_particle.get_position();
 
@@ -27,34 +26,30 @@ impl ParticleForceGeneratorOps for ParticleForceSpring {
         // calc. final force and apply
         f.normalize();
         f = f * (-magnitude);
-        println!("add force from spring: {:?},    particle.id = {}", f, particle.get_id());
+        println!(
+            "add force from spring: {:?},    particle.id = {}",
+            f,
+            particle.get_id()
+        );
         particle.add_force(&f);
     }
-
-    fn needs_other_particle(&self) -> bool { true }
-    fn get_other_particle_idx(&self) -> ParticleIdx { self.other }
 }
 
 impl ParticleForceSpring {
     pub fn new() -> ParticleForceSpring {
         ParticleForceSpring {
-            other: 99999,
+            other: None,
             spring_constant: 0.0,
             rest_length: 0.0,
-            registry: None,
         }
     }
 
-    pub fn set_other(&mut self, other_idx: ParticleIdx) {
-        self.other = other_idx;
+    pub fn set_other(&mut self, other: ParticleIdx) {
+        self.other = Some(other);
     }
 
     pub fn get_other(&self) -> ParticleIdx {
-        self.other
-    }
-
-    pub fn set_registry(&mut self, r: ParticleForceRegistry) {
-        self.registry = Some(r);
+        self.other.unwrap()
     }
 }
 

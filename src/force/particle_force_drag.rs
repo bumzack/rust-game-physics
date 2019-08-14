@@ -3,6 +3,7 @@ use crate::math::common::assert_vector;
 use crate::math::vector::Vector;
 use crate::math::vector::VectorOps;
 use crate::particle::particle::{Particle, ParticleOps};
+use crate::force::particle_force_registry::ParticleForceRegistry;
 
 #[derive(Clone)]
 pub struct ParticleForceDrag {
@@ -11,13 +12,17 @@ pub struct ParticleForceDrag {
 }
 
 impl<'a> ParticleForceGeneratorOps for ParticleForceDrag {
-    fn update_force(&self, particle: &mut Particle, duration: f32) {
+    fn update_force(&self, particle: &mut Particle, duration: f32,  all_particles: &Vec<Particle>) {
         let mut f = Vector::new_vector_from(particle.get_velocity());
         let mut drag_coeff = f.magnitude();
         drag_coeff = self.k1 * drag_coeff + self.k2 * drag_coeff * drag_coeff;
         f.normalize();
         f = -drag_coeff * f;
-        println!("DRAG               add force from drag: {:?},    particle.id = {}", f, particle.get_id());
+        println!(
+            "DRAG               add force from drag: {:?},    particle.id = {}",
+            f,
+            particle.get_id()
+        );
         particle.add_force(&f);
     }
 }
@@ -25,10 +30,7 @@ impl<'a> ParticleForceGeneratorOps for ParticleForceDrag {
 impl<'a> ParticleForceDrag {
     pub fn new() -> ParticleForceDrag {
         // defualt: no drag ?!
-        ParticleForceDrag {
-            k1: 1.0,
-            k2: 1.0,
-        }
+        ParticleForceDrag { k1: 1.0, k2: 1.0 }
     }
 
     pub fn set_drag_k1(&mut self, k1: f32) {

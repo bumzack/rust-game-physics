@@ -34,9 +34,11 @@ fn main() {
     p2.set_velocity(v2);
     p2.set_id(2);
 
-
     let p1_idx = registry.add_particle(p1);
     let p2_idx = registry.add_particle(p2);
+
+    pfg4.set_other(p1_idx);
+
 
     let pfg1_idx = registry.add_particle_force_generator(Box::new(pfg1));
     let pfg2_idx = registry.add_particle_force_generator(Box::new(pfg2));
@@ -47,17 +49,24 @@ fn main() {
     registry.add_force_for_particle(p2_idx, pfg2_idx);
 
 
-    // after all particles and generators are added to the registry, set the registry in the spring generator :-(((
-    pfg4.set_registry(registry.clone());
+    registry.add_force_for_particle(p2_idx, pfg4_idx);
 
-
-
-
-
-    println!("p1 position = {:?}", registry.get_particle(p1_idx).get_position());
-    println!("p1 velocity = {:?}", registry.get_particle(p1_idx).get_velocity());
-    println!("p2 position = {:?}", registry.get_particle(p2_idx).get_position());
-    println!("p2 velocity = {:?}", registry.get_particle(p2_idx).get_velocity());
+    println!(
+        "p1 position = {:?}",
+        registry.get_particle(p1_idx).get_position()
+    );
+    println!(
+        "p1 velocity = {:?}",
+        registry.get_particle(p1_idx).get_velocity()
+    );
+    println!(
+        "p2 position = {:?}",
+        registry.get_particle(p2_idx).get_position()
+    );
+    println!(
+        "p2 velocity = {:?}",
+        registry.get_particle(p2_idx).get_velocity()
+    );
 
     println!("");
     println!("");
@@ -69,13 +78,23 @@ fn main() {
     println!("");
     println!("");
 
-
     println!("p2 has 1 pfg expected changes ");
-    println!("p1 position = {:?}", registry.get_particle(p1_idx).get_position());
-    println!("p1 velocity = {:?}", registry.get_particle(p1_idx).get_velocity());
-    println!("p2 position = {:?}", registry.get_particle(p2_idx).get_position());
-    println!("p2 velocity = {:?}", registry.get_particle(p2_idx).get_velocity());
-
+    println!(
+        "p1 position = {:?}",
+        registry.get_particle(p1_idx).get_position()
+    );
+    println!(
+        "p1 velocity = {:?}",
+        registry.get_particle(p1_idx).get_velocity()
+    );
+    println!(
+        "p2 position = {:?}",
+        registry.get_particle(p2_idx).get_position()
+    );
+    println!(
+        "p2 velocity = {:?}",
+        registry.get_particle(p2_idx).get_velocity()
+    );
 
     registry.add_force_for_particle(p2_idx, pfg3_idx);
 
@@ -90,10 +109,22 @@ fn main() {
     println!("");
 
     println!("p2 shoudl be different from p1");
-    println!("p1 position = {:?}", registry.get_particle(p1_idx).get_position());
-    println!("p1 velocity = {:?}", registry.get_particle(p1_idx).get_velocity());
-    println!("p2 position = {:?}", registry.get_particle(p2_idx).get_position());
-    println!("p2 velocity = {:?}", registry.get_particle(p2_idx).get_velocity());
+    println!(
+        "p1 position = {:?}",
+        registry.get_particle(p1_idx).get_position()
+    );
+    println!(
+        "p1 velocity = {:?}",
+        registry.get_particle(p1_idx).get_velocity()
+    );
+    println!(
+        "p2 position = {:?}",
+        registry.get_particle(p2_idx).get_position()
+    );
+    println!(
+        "p2 velocity = {:?}",
+        registry.get_particle(p2_idx).get_velocity()
+    );
 
     println!("");
     println!("");
@@ -106,19 +137,26 @@ fn main() {
     println!("");
 
     println!("p2 shoudl be different from p1");
-    println!("p1 position = {:?}", registry.get_particle(p1_idx).get_position());
-    println!("p1 velocity = {:?}", registry.get_particle(p1_idx).get_velocity());
-    println!("p2 position = {:?}", registry.get_particle(p2_idx).get_position());
-    println!("p2 velocity = {:?}", registry.get_particle(p2_idx).get_velocity());
+    println!(
+        "p1 position = {:?}",
+        registry.get_particle(p1_idx).get_position()
+    );
+    println!(
+        "p1 velocity = {:?}",
+        registry.get_particle(p1_idx).get_velocity()
+    );
+    println!(
+        "p2 position = {:?}",
+        registry.get_particle(p2_idx).get_position()
+    );
+    println!(
+        "p2 velocity = {:?}",
+        registry.get_particle(p2_idx).get_velocity()
+    );
 
 
-    pfg4.set_other(p1_idx);
-    registry.add_force_for_particle(p2_idx, pfg4_idx);
 
     // after all particles and generators are added to the registry, set the registry in the spring generator :-(((
-    pfg4.set_registry(registry.clone());
-
-
 
     println!("ADDED spring to p2");
     println!("");
@@ -131,7 +169,12 @@ fn main() {
     println!("");
 
     println!("p2 shoudl be different from above");
-    println!("p2 position = {:?}", registry.get_particle(p2_idx).get_position());
-    println!("p2 velocity = {:?}", registry.get_particle(p2_idx).get_velocity());
+    println!(
+        "p2 position = {:?}",
+        registry.get_particle(p2_idx).get_position()
+    );
+    println!(
+        "p2 velocity = {:?}",
+        registry.get_particle(p2_idx).get_velocity()
+    );
 }
-
