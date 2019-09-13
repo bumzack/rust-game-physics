@@ -5,7 +5,6 @@ use crate::force::particle_force_types::{ParticleContainer, ParticleIdx};
 use crate::particle::particle::{Particle, ParticleOps};
 use math::prelude::*;
 
-
 #[derive(Clone)]
 pub struct ParticleForceBuoyancySpring {
     max_depth: f32,
@@ -15,12 +14,7 @@ pub struct ParticleForceBuoyancySpring {
 }
 
 impl ParticleForceGeneratorOps for ParticleForceBuoyancySpring {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        _duration: f32,
-        all_particles: &ParticleContainer,
-    ) {
+    fn update_force(&self, particle: &mut Particle, _duration: f32, all_particles: &ParticleContainer) {
         let depth = particle.get_position().get_y();
         if depth >= self.water_height + self.max_depth {
             return;
@@ -33,8 +27,7 @@ impl ParticleForceGeneratorOps for ParticleForceBuoyancySpring {
             return;
         }
         f.set_y(
-            self.liquid_density * self.volume * (depth - self.max_depth - self.water_height) / 2.0
-                * self.max_depth,
+            self.liquid_density * self.volume * (depth - self.max_depth - self.water_height) / 2.0 * self.max_depth,
         );
         particle.add_force(&f);
     }

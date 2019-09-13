@@ -12,12 +12,7 @@ pub struct ParticleForceSpring {
 }
 
 impl ParticleForceGeneratorOps for ParticleForceSpring {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        _duration: f32,
-        all_particles: &ParticleContainer,
-    ) {
+    fn update_force(&self, particle: &mut Particle, _duration: f32, all_particles: &ParticleContainer) {
         let other_particle = all_particles[self.other.unwrap()];
         let mut f = Tuple4D::new_point_from(particle.get_position());
         f = &f - other_particle.get_position();
@@ -29,11 +24,7 @@ impl ParticleForceGeneratorOps for ParticleForceSpring {
         // calc. final force and apply
         let mut f = Tuple4D::normalize(&f);
         f = f * (-magnitude);
-        println!(
-            "add force from spring: {:?},    particle.id = {}",
-            f,
-            particle.get_id()
-        );
+        println!("add force from spring: {:?},    particle.id = {}", f, particle.get_id());
         particle.add_force(&f);
     }
 }

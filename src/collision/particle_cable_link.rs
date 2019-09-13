@@ -20,15 +20,10 @@ impl ParticleLinkOps for ParticleCableLink {
         let p0 = registry.get_particle(self.particle[0].unwrap());
         let p1 = registry.get_particle(self.particle[1].unwrap());
         let relative_pos = p0.get_position() - p1.get_position();
-      Tuple4D::magnitude(&relative_pos)
+        Tuple4D::magnitude(&relative_pos)
     }
 
-    fn add_contact(
-        &mut self,
-        contact: &mut ParticleContact,
-        limit: usize,
-        registry: &ParticleForceRegistry,
-    ) -> usize {
+    fn add_contact(&mut self, contact: &mut ParticleContact, limit: usize, registry: &ParticleForceRegistry) -> usize {
         let p0 = registry.get_particle(self.particle[0].unwrap());
         let p1 = registry.get_particle(self.particle[1].unwrap());
 
@@ -44,7 +39,7 @@ impl ParticleLinkOps for ParticleCableLink {
         contact.set_particle1(self.particle[1].unwrap());
 
         let mut normal = p1.get_position() - p0.get_position();
-    let normal =   Tuple4D::normalize(&normal);
+        let normal = Tuple4D::normalize(&normal);
         contact.set_contact_normal(normal);
         contact.set_penetration(length - self.max_length);
         contact.set_restitution(self.restitution);

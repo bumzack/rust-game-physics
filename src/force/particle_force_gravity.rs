@@ -11,12 +11,7 @@ pub struct ParticleForceGravity {
 }
 
 impl<'a> ParticleForceGeneratorOps for ParticleForceGravity {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        duration: f32,
-        all_particles: &ParticleContainer,
-    ) {
+    fn update_force(&self, particle: &mut Particle, duration: f32, all_particles: &ParticleContainer) {
         if !particle.has_finite_mass() {
             return;
         }

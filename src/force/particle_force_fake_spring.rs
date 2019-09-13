@@ -13,12 +13,7 @@ pub struct ParticleForceFakeSpring {
 }
 
 impl ParticleForceGeneratorOps for ParticleForceFakeSpring {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        duration: f32,
-        all_particles: &ParticleContainer,
-    ) {
+    fn update_force(&self, particle: &mut Particle, duration: f32, all_particles: &ParticleContainer) {
         if !particle.has_finite_mass() {
             return;
         }
@@ -31,16 +26,14 @@ impl ParticleForceGeneratorOps for ParticleForceFakeSpring {
             return;
         }
 
-        let c =
-            &position * (self.damping / (2.0 * gamma)) + particle.get_velocity() * (1.0 / gamma);
+        let c = &position * (self.damping / (2.0 * gamma)) + particle.get_velocity() * (1.0 / gamma);
 
         // target position
         let mut target = &position * (gamma * duration).cos() + c * (gamma * duration).sin();
         target = target * (-0.5 * duration * self.damping).exp();
 
         // resulting acc. --> force
-        let accel = (&target - &position) * (1.0 / (duration * duration))
-            - particle.get_velocity() * duration;
+        let accel = (&target - &position) * (1.0 / (duration * duration)) - particle.get_velocity() * duration;
         particle.add_force(&(&accel * particle.get_mass()));
     }
 }

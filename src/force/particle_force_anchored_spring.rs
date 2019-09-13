@@ -13,12 +13,7 @@ pub struct ParticleForceAnchoredSpring {
 }
 
 impl ParticleForceGeneratorOps for ParticleForceAnchoredSpring {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        _duration: f32,
-        all_particles: &ParticleContainer,
-    ) {
+    fn update_force(&self, particle: &mut Particle, _duration: f32, all_particles: &ParticleContainer) {
         let mut f = Tuple4D::new_point_from(particle.get_position());
         f = &f - &self.anchor;
 
@@ -28,11 +23,7 @@ impl ParticleForceGeneratorOps for ParticleForceAnchoredSpring {
         // calc. final force and apply
         let mut f = Tuple4D::normalize(&f);
         f = f * (-magnitude);
-        println!(
-            "add force from spring: {:?},    particle.id = {}",
-            f,
-            particle.get_id()
-        );
+        println!("add force from spring: {:?},    particle.id = {}", f, particle.get_id());
         particle.add_force(&f);
     }
 }

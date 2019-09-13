@@ -1,15 +1,10 @@
 use crate::force::particle_force_registry::ParticleForceRegistry;
 use crate::force::particle_force_types::ParticleContainer;
- use crate::particle::particle::{Particle, ParticleOps};
+use crate::particle::particle::{Particle, ParticleOps};
 use math::prelude::*;
 
 pub trait ParticleForceGeneratorOps: ParticleForceGeneratorOpsClone {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        duration: f32,
-        all_particles: &ParticleContainer,
-    );
+    fn update_force(&self, particle: &mut Particle, duration: f32, all_particles: &ParticleContainer);
 }
 
 // this is from some clever guy on the internet - either stackoverflow or rust lang forum

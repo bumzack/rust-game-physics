@@ -29,8 +29,8 @@ pub trait Tuple4DOps {
     fn magnitude(&self) -> f32;
     fn normalize(&mut self);
 
-    fn new_Tuple4D(x: f32, y: f32, z: f32) -> Tuple4D;
-    fn new_Tuple4D_from(v: &Tuple4D) -> Tuple4D;
+    fn new_vector(x: f32, y: f32, z: f32) -> Tuple4D;
+    fn new_vector_from(v: &Tuple4D) -> Tuple4D;
 
     fn new_point(x: f32, y: f32, z: f32) -> Tuple4D;
     fn new(x: f32, y: f32, z: f32, w: f32) -> Tuple4D;
@@ -77,7 +77,7 @@ impl Tuple4DOps for Tuple4D {
         self.w = self.w / m;
     }
 
-    fn new_Tuple4D(x: f32, y: f32, z: f32) -> Tuple4D {
+    fn new_vector(x: f32, y: f32, z: f32) -> Tuple4D {
         Tuple4D {
             x: x,
             y: y,
@@ -86,7 +86,7 @@ impl Tuple4DOps for Tuple4D {
         }
     }
 
-    fn new_Tuple4D_from(v: &Tuple4D) -> Tuple4D {
+    fn new_vector_from(v: &Tuple4D) -> Tuple4D {
         Tuple4D {
             x: v.x,
             y: v.y,
@@ -298,7 +298,7 @@ impl Mul for Tuple4D {
     type Output = Tuple4D;
 
     fn mul(self, rhs: Tuple4D) -> Tuple4D {
-        Tuple4D::new_Tuple4D(
+        Tuple4D::new_vector(
             self.y * rhs.z - self.z * rhs.y,
             self.z * rhs.x - self.x * rhs.z,
             self.x * rhs.y - self.y * rhs.x,
@@ -310,7 +310,7 @@ impl<'a, 'b> Mul<&'b Tuple4D> for &'a Tuple4D {
     type Output = Tuple4D;
 
     fn mul(self, rhs: &'b Tuple4D) -> Tuple4D {
-        Tuple4D::new_Tuple4D(
+        Tuple4D::new_vector(
             self.y * rhs.z - self.z * rhs.y,
             self.z * rhs.x - self.x * rhs.z,
             self.x * rhs.y - self.y * rhs.x,
@@ -361,7 +361,7 @@ fn test_is_point() {
 
 #[test]
 fn test_is_Tuple4D() {
-    let a = Tuple4D::new_Tuple4D(4.3, -4.2, 3.1);
+    let a = Tuple4D::new_vector(4.3, -4.2, 3.1);
     assert_eq!(a.x, 4.3);
     assert_eq!(a.y, -4.2);
     assert_eq!(a.z, 3.1);
@@ -396,7 +396,7 @@ fn test_sub_point_point() {
 #[test]
 fn test_sub_vec_point() {
     let p = Tuple4D::new_point(3., 2., 1.);
-    let v = Tuple4D::new_Tuple4D(5., 6., 7.);
+    let v = Tuple4D::new_vector(5., 6., 7.);
     let c = p - v;
 
     assert_eq!(c.x, -2.0);
@@ -407,8 +407,8 @@ fn test_sub_vec_point() {
 
 #[test]
 fn test_sub_vec_vec() {
-    let v1 = Tuple4D::new_Tuple4D(3., 2., 1.);
-    let v2 = Tuple4D::new_Tuple4D(5., 6., 7.);
+    let v1 = Tuple4D::new_vector(3., 2., 1.);
+    let v2 = Tuple4D::new_vector(5., 6., 7.);
     let c = v1 - v2;
 
     assert_eq!(c.x, -2.0);
@@ -460,32 +460,32 @@ fn test_div_tuple_scalar() {
 
 #[test]
 fn test_magnitude() {
-    let v = Tuple4D::new_Tuple4D(1., 0., 0.);
+    let v = Tuple4D::new_vector(1., 0., 0.);
     let m = Tuple4D::mag(&v);
     assert_eq!(m, 1.);
 
-    let v = Tuple4D::new_Tuple4D(0., 1., 0.);
+    let v = Tuple4D::new_vector(0., 1., 0.);
     let m = Tuple4D::mag(&v);
     assert_eq!(m, 1.);
 
-    let v = Tuple4D::new_Tuple4D(0., 0., 1.);
+    let v = Tuple4D::new_vector(0., 0., 1.);
     let m = Tuple4D::mag(&v);
     assert_eq!(m, 1.);
 
     let expected: f32 = 14.0;
 
-    let v = Tuple4D::new_Tuple4D(1., 2., 3.);
+    let v = Tuple4D::new_vector(1., 2., 3.);
     let m = Tuple4D::mag(&v);
     assert_float(m, expected.sqrt());
 
-    let v = Tuple4D::new_Tuple4D(-1., -2., -3.);
+    let v = Tuple4D::new_vector(-1., -2., -3.);
     let m = Tuple4D::mag(&v);
     assert_float(m, expected.sqrt());
 }
 
 #[test]
 fn test_normalize() {
-    let v = Tuple4D::new_Tuple4D(4., 0., 0.);
+    let v = Tuple4D::new_vector(4., 0., 0.);
     let n = Tuple4D::norm(&v);
     assert_float(n.x, 1.);
     assert_float(n.y, 0.);
@@ -494,14 +494,14 @@ fn test_normalize() {
 
     let expected: f32 = 14.0;
 
-    let v = Tuple4D::new_Tuple4D(1., 2., 3.);
+    let v = Tuple4D::new_vector(1., 2., 3.);
     let n = Tuple4D::norm(&v);
     assert_float(n.x, 1. / expected.sqrt());
     assert_float(n.y, 2. / expected.sqrt());
     assert_float(n.z, 3. / expected.sqrt());
     assert!(Tuple4D::is_Tuple4D(&n));
 
-    let v = Tuple4D::new_Tuple4D(1., 2., 3.);
+    let v = Tuple4D::new_vector(1., 2., 3.);
     let n = Tuple4D::norm(&v);
     let m = Tuple4D::mag(&n);
     assert_float(m, 1.);
@@ -509,24 +509,24 @@ fn test_normalize() {
 
 #[test]
 fn test_dot_product() {
-    let a = Tuple4D::new_Tuple4D(1., 2., 3.);
-    let b = Tuple4D::new_Tuple4D(2., 3., 4.);
+    let a = Tuple4D::new_vector(1., 2., 3.);
+    let b = Tuple4D::new_vector(2., 3., 4.);
     let c = a ^ b;
     assert_float(c, 20.);
 }
 
 #[test]
 fn test_cross_product() {
-    let a = Tuple4D::new_Tuple4D(1., 2., 3.);
-    let b = Tuple4D::new_Tuple4D(2., 3., 4.);
+    let a = Tuple4D::new_vector(1., 2., 3.);
+    let b = Tuple4D::new_vector(2., 3., 4.);
 
     let c = a * b;
     assert_eq!(c.x, -1.0);
     assert_eq!(c.y, 2.0);
     assert_eq!(c.z, -1.0);
 
-    let a = Tuple4D::new_Tuple4D(1., 2., 3.);
-    let b = Tuple4D::new_Tuple4D(2., 3., 4.);
+    let a = Tuple4D::new_vector(1., 2., 3.);
+    let b = Tuple4D::new_vector(2., 3., 4.);
     let c = b * a;
     assert_eq!(c.x, 1.0);
     assert_eq!(c.y, -2.0);
@@ -535,24 +535,24 @@ fn test_cross_product() {
 
 #[test]
 fn test_tuple_reflecting_45() {
-    let v = Tuple4D::new_Tuple4D(1., -1., 0.);
-    let n = Tuple4D::new_Tuple4D(0., 1., 0.);
+    let v = Tuple4D::new_vector(1., -1., 0.);
+    let n = Tuple4D::new_vector(0., 1., 0.);
 
     let r = Tuple4D::reflect(&v, &n);
 
-    let r_expected = Tuple4D::new_Tuple4D(1., 1., 0.);
+    let r_expected = Tuple4D::new_vector(1., 1., 0.);
 
     assert_Tuple4D(&r, &r_expected);
 }
 
 #[test]
 fn test_tuple_reflecting() {
-    let v = Tuple4D::new_Tuple4D(0.0, -1.0, 0.);
-    let n = Tuple4D::new_Tuple4D(SQRT_2 / 2.0, SQRT_2 / 2.0, 0.);
+    let v = Tuple4D::new_vector(0.0, -1.0, 0.);
+    let n = Tuple4D::new_vector(SQRT_2 / 2.0, SQRT_2 / 2.0, 0.);
 
     let r = Tuple4D::reflect(&v, &n);
 
-    let r_expected = Tuple4D::new_Tuple4D(1.0, 0.0, 0.0);
+    let r_expected = Tuple4D::new_vector(1.0, 0.0, 0.0);
 
     assert_Tuple4D(&r, &r_expected);
 }

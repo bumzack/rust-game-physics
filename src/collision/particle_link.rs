@@ -12,12 +12,7 @@ use math::prelude::*;
 
 pub trait ParticleLinkOps {
     fn current_length(&self, registry: &ParticleForceRegistry) -> f32;
-    fn add_contact(
-        &mut self,
-        contact: &mut ParticleContact,
-        limit: usize,
-        registry: &ParticleForceRegistry,
-    ) -> usize;
+    fn add_contact(&mut self, contact: &mut ParticleContact, limit: usize, registry: &ParticleForceRegistry) -> usize;
 }
 
 // TODO

@@ -1,6 +1,5 @@
 use math::prelude::*;
 
-
 #[derive(Clone, Debug, Copy)]
 pub struct Particle {
     position: Tuple4D,
@@ -143,10 +142,7 @@ impl ParticleOps for Particle {
             self.force_accum, f
         );
         self.force_accum = &self.force_accum + &f;
-        println!(
-            "Particle::add_force:   AFTERwards force_accum = {:?}",
-            self.force_accum
-        );
+        println!("Particle::add_force:   AFTERwards force_accum = {:?}", self.force_accum);
         println!();
     }
 
@@ -178,8 +174,8 @@ impl Particle {
 // TODO
 #[test]
 fn test_particle_integrate() {
-    let velocity_initial_expected = Tuple4D::new_Tuple4D(0.0, 0.0, 0.0);
-    let velocity_after_integration_expected = Tuple4D::new_Tuple4D(1.0, 1.0, 1.0);
+    let velocity_initial_expected = Tuple4D::new_vector(0.0, 0.0, 0.0);
+    let velocity_after_integration_expected = Tuple4D::new_vector(1.0, 1.0, 1.0);
 
     let mut p = Particle::new();
     // p.set_velocity()

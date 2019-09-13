@@ -13,14 +13,9 @@ pub struct ParticleForceDrag {
 }
 
 impl<'a> ParticleForceGeneratorOps for ParticleForceDrag {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        duration: f32,
-        all_particles: &ParticleContainer,
-    ) {
-        let   f = Tuple4D::new_vector_from(particle.get_velocity());
-        let mut drag_coeff =Tuple4D::magnitude( &f);
+    fn update_force(&self, particle: &mut Particle, duration: f32, all_particles: &ParticleContainer) {
+        let f = Tuple4D::new_vector_from(particle.get_velocity());
+        let mut drag_coeff = Tuple4D::magnitude(&f);
         drag_coeff = self.k1 * drag_coeff + self.k2 * drag_coeff * drag_coeff;
         let mut f = Tuple4D::normalize(&f);
         f = f * (-drag_coeff);

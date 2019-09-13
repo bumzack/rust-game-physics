@@ -950,7 +950,7 @@ fn test_matrix_transformation_invert() {
 #[test]
 fn test_matrix_transformation_Tuple4D() {
     let transform = Matrix::translation(5.0, -3.0, 2.0);
-    let v = Tuple4D::new_Tuple4D(-3.0, 4.0, 5.0);
+    let v = Tuple4D::new_vector(-3.0, 4.0, 5.0);
 
     let v_transformed = &transform * &v;
 
@@ -991,7 +991,7 @@ fn test_matrix_scale_Tuple4D_invert() {
     let transform = Matrix::scale(2.0, 3.0, 4.0);
     let inv = Matrix::invert(&transform).unwrap();
 
-    let v = Tuple4D::new_Tuple4D(-4.0, 6.0, 8.0);
+    let v = Tuple4D::new_vector(-4.0, 6.0, 8.0);
 
     let v_transformed = &inv * &v;
 
@@ -1215,7 +1215,7 @@ fn test_matrix_transformation_chained() {
 fn test_matrix_view_transform_default_direction() {
     let from = Tuple4D::new_point(0.0, 0.0, 0.0);
     let to = Tuple4D::new_point(0.0, 0.0, -1.0);
-    let up = Tuple4D::new_Tuple4D(0.0, 1.0, 0.0);
+    let up = Tuple4D::new_vector(0.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
     let v_expected = Matrix::new_identity_4x4();
@@ -1227,7 +1227,7 @@ fn test_matrix_view_transform_default_direction() {
 fn test_matrix_view_transform_positive_z_direction() {
     let from = Tuple4D::new_point(0.0, 0.0, 0.0);
     let to = Tuple4D::new_point(0.0, 0.0, 1.0);
-    let up = Tuple4D::new_Tuple4D(0.0, 1.0, 0.0);
+    let up = Tuple4D::new_vector(0.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
     let v_expected = Matrix::scale(-1.0, 1.0, -1.0);
@@ -1239,7 +1239,7 @@ fn test_matrix_view_transform_positive_z_direction() {
 fn test_matrix_view_transform_translation() {
     let from = Tuple4D::new_point(0.0, 0.0, 8.0);
     let to = Tuple4D::new_point(0.0, 0.0, 0.0);
-    let up = Tuple4D::new_Tuple4D(0.0, 1.0, 0.0);
+    let up = Tuple4D::new_vector(0.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
     let v_expected = Matrix::translation(0.0, 0.0, -8.0);
@@ -1251,7 +1251,7 @@ fn test_matrix_view_transform_translation() {
 fn test_matrix_view_transform_arbitrary() {
     let from = Tuple4D::new_point(1.0, 3.0, 2.0);
     let to = Tuple4D::new_point(4.0, -2.0, 8.0);
-    let up = Tuple4D::new_Tuple4D(1.0, 1.0, 0.0);
+    let up = Tuple4D::new_vector(1.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
 

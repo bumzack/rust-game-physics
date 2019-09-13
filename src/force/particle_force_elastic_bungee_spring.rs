@@ -13,17 +13,12 @@ pub struct ParticleForceElasticBungeeSpring {
 }
 
 impl ParticleForceGeneratorOps for ParticleForceElasticBungeeSpring {
-    fn update_force(
-        &self,
-        particle: &mut Particle,
-        _duration: f32,
-        all_particles: &ParticleContainer,
-    ) {
+    fn update_force(&self, particle: &mut Particle, _duration: f32, all_particles: &ParticleContainer) {
         let other_particle = all_particles[self.other.unwrap()];
         let mut f = Tuple4D::new_point_from(particle.get_position());
         f = &f - other_particle.get_position();
 
-        let mut magnitude =Tuple4D::magnitude(&f);
+        let mut magnitude = Tuple4D::magnitude(&f);
         if magnitude <= self.rest_length {
             return;
         }
@@ -32,12 +27,8 @@ impl ParticleForceGeneratorOps for ParticleForceElasticBungeeSpring {
 
         // calc. final force and apply
         let mut f = Tuple4D::normalize(&f);
-         f = f * (-magnitude);
-        println!(
-            "add force from spring: {:?},    particle.id = {}",
-            f,
-            particle.get_id()
-        );
+        f = f * (-magnitude);
+        println!("add force from spring: {:?},    particle.id = {}", f, particle.get_id());
         particle.add_force(&f);
     }
 }

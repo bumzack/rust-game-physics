@@ -90,8 +90,7 @@ impl ParticleContactOps for ParticleContact {
         // amount of imp per unit of inv. mass
         let impulse_per_inverse_mass = &self.contact_normal * impulse;
 
-        let particle0_new_velocity =
-            p0.get_velocity() + &(&impulse_per_inverse_mass * p0.get_inverse_mass());
+        let particle0_new_velocity = p0.get_velocity() + &(&impulse_per_inverse_mass * p0.get_inverse_mass());
         println!("particle0: old_velocity = {:?}", p0.get_velocity());
         println!("particle0_new_velocity = {:?}", particle0_new_velocity);
         registry.set_velocity(self.particle[0].unwrap(), particle0_new_velocity);
@@ -99,8 +98,7 @@ impl ParticleContactOps for ParticleContact {
         if self.particle[1].is_some() {
             // particle 1 goes into the inverse direction -> -
             let p1 = registry.get_particle(self.particle[1].unwrap());
-            let particle1_new_velocity =
-                p1.get_velocity() + &(&impulse_per_inverse_mass * (-p1.get_inverse_mass()));
+            let particle1_new_velocity = p1.get_velocity() + &(&impulse_per_inverse_mass * (-p1.get_inverse_mass()));
             println!("particle1: old_velocity = {:?}", p1.get_velocity());
             println!("particle1_new_velocity = {:?}", particle1_new_velocity);
             registry.set_velocity(self.particle[1].unwrap(), particle1_new_velocity);
