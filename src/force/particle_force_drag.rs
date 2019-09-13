@@ -1,11 +1,10 @@
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
 use crate::force::particle_force_registry::ParticleForceRegistry;
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::{Particle, ParticleOps};
 
 use crate::force::particle_force_types::ParticleContainer;
+use math::prelude::*;
 
 #[derive(Clone)]
 pub struct ParticleForceDrag {
@@ -20,11 +19,11 @@ impl<'a> ParticleForceGeneratorOps for ParticleForceDrag {
         duration: f32,
         all_particles: &ParticleContainer,
     ) {
-        let mut f = Vector::new_vector_from(particle.get_velocity());
-        let mut drag_coeff = f.magnitude();
+        let   f = Tuple4D::new_vector_from(particle.get_velocity());
+        let mut drag_coeff =Tuple4D::magnitude( &f);
         drag_coeff = self.k1 * drag_coeff + self.k2 * drag_coeff * drag_coeff;
-        f.normalize();
-        f = -drag_coeff * f;
+        let mut f = Tuple4D::normalize(&f);
+        f = f * (-drag_coeff);
         println!(
             "DRAG               add force from drag: {:?},    particle.id = {}",
             f,

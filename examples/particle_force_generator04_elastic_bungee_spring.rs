@@ -7,27 +7,27 @@ use rust_game_physics::force::particle_force_registry::{
     ParticleForceRegistry, ParticleForceRegistryOps,
 };
 use rust_game_physics::force::particle_force_spring::ParticleForceSpring;
-use rust_game_physics::math::vector::Vector;
-use rust_game_physics::math::vector::VectorOps;
+use rust_game_physics::math::Tuple4D::Tuple4D;
+use rust_game_physics::math::Tuple4D::Tuple4DOps;
 use rust_game_physics::particle::particle::Particle;
 use rust_game_physics::particle::particle::ParticleOps;
 
 fn main() {
     let mut registry = ParticleForceRegistry::new();
 
-    let anchor = Vector::new_point(10.0, 10.0, 10.0);
+    let anchor = Tuple4D::new_point(10.0, 10.0, 10.0);
 
     let mut pfg1 = ParticleForceElasticBungeeSpring::new();
     pfg1.set(9.0);
     pfg1.set_spring_constant(10.0);
 
-    let v1 = Vector::new_vector(1.0, 2.0, 3.0);
+    let v1 = Tuple4D::new_Tuple4D(1.0, 2.0, 3.0);
     let mut p1 = Particle::new();
     p1.set_inverse_mass(0.1);
     p1.set_velocity(v1);
     p1.set_id(1);
 
-    let v2 = Vector::new_vector(-1.0, -2.0, -3.0);
+    let v2 = Tuple4D::new_Tuple4D(-1.0, -2.0, -3.0);
     let mut p2 = Particle::new();
     p2.set_inverse_mass(0.1);
     p2.set_velocity(v2);

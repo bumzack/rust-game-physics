@@ -1,14 +1,13 @@
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
 use crate::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
 use crate::force::particle_force_types::ParticleContainer;
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::{Particle, ParticleOps};
+use math::prelude::*;
 
 #[derive(Clone)]
 pub struct ParticleForceAnchoredSpring {
-    anchor: Vector,
+    anchor: Tuple4D,
     spring_constant: f32,
     rest_length: f32,
 }
@@ -20,14 +19,14 @@ impl ParticleForceGeneratorOps for ParticleForceAnchoredSpring {
         _duration: f32,
         all_particles: &ParticleContainer,
     ) {
-        let mut f = Vector::new_vector_from(particle.get_position());
+        let mut f = Tuple4D::new_point_from(particle.get_position());
         f = &f - &self.anchor;
 
-        let mut magnitude = f.magnitude();
+        let mut magnitude = Tuple4D::magnitude(&f);
         magnitude = (self.rest_length - magnitude) * self.spring_constant;
 
         // calc. final force and apply
-        f.normalize();
+        let mut f = Tuple4D::normalize(&f);
         f = f * (-magnitude);
         println!(
             "add force from spring: {:?},    particle.id = {}",
@@ -41,17 +40,17 @@ impl ParticleForceGeneratorOps for ParticleForceAnchoredSpring {
 impl ParticleForceAnchoredSpring {
     pub fn new() -> ParticleForceAnchoredSpring {
         ParticleForceAnchoredSpring {
-            anchor: Vector::new_point(0.0, 0.0, 0.0),
+            anchor: Tuple4D::new_point(0.0, 0.0, 0.0),
             spring_constant: 0.0,
             rest_length: 0.0,
         }
     }
 
-    pub fn set_anchor(&mut self, anchor: Vector) {
+    pub fn set_anchor(&mut self, anchor: Tuple4D) {
         self.anchor = anchor;
     }
 
-    pub fn get_anchor(&self) -> &Vector {
+    pub fn get_anchor(&self) -> &Tuple4D {
         &self.anchor
     }
 

@@ -2,9 +2,9 @@
 // THATS FOR A LEFT HANDED COORDINATE SYSTEM ...
 // where are modifications needed
 
-use crate::math::common::{assert_float, assert_matrix, assert_two_float, assert_vector};
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+use crate::math::common::{assert_float, assert_matrix, assert_two_float, assert_Tuple4D};
+use crate::math::Tuple4D::Tuple4D;
+use crate::math::Tuple4D::Tuple4DOps;
 use std::f32::consts::{PI, SQRT_2};
 use std::ops::Mul;
 
@@ -68,7 +68,7 @@ pub trait MatrixOps {
     fn rotate_y(rad: f32) -> Matrix;
     fn rotate_z(rad: f32) -> Matrix;
 
-    fn view_transform(from: &Vector, to: &Vector, up: &Vector) -> Matrix;
+    fn view_transform(from: &Tuple4D, to: &Tuple4D, up: &Tuple4D) -> Matrix;
 }
 
 impl MatrixOps for Matrix {
@@ -345,9 +345,9 @@ impl MatrixOps for Matrix {
         m
     }
 
-    fn view_transform(from: &Vector, to: &Vector, up: &Vector) -> Matrix {
-        let forward = Vector::norm(&(to - from));
-        let left = &forward * &Vector::norm(up);
+    fn view_transform(from: &Tuple4D, to: &Tuple4D, up: &Tuple4D) -> Matrix {
+        let forward = Tuple4D::norm(&(to - from));
+        let left = &forward * &Tuple4D::norm(up);
         let true_up = &left * &forward;
 
         let orientation = Matrix::new_matrix_4x4(
@@ -421,12 +421,12 @@ impl<'a, 'b> Mul<&'b Matrix> for &'a Matrix {
     }
 }
 
-impl Mul<Vector> for Matrix {
-    type Output = Vector;
+impl Mul<Tuple4D> for Matrix {
+    type Output = Tuple4D;
 
-    fn mul(self, rhs: Vector) -> Vector {
+    fn mul(self, rhs: Tuple4D) -> Tuple4D {
         assert!(self.rows == 4);
-        let mut t = Vector::empty();
+        let mut t = Tuple4D::empty();
 
         // TODO: not a generic code for general matrix dimensions
         t.x = self.m[0][0] * rhs.x
@@ -450,12 +450,12 @@ impl Mul<Vector> for Matrix {
     }
 }
 
-impl<'a, 'b> Mul<&'b Vector> for &'a Matrix {
-    type Output = Vector;
+impl<'a, 'b> Mul<&'b Tuple4D> for &'a Matrix {
+    type Output = Tuple4D;
 
-    fn mul(self, rhs: &'b Vector) -> Vector {
+    fn mul(self, rhs: &'b Tuple4D) -> Tuple4D {
         assert!(self.rows == 4);
-        let mut t = Vector::empty();
+        let mut t = Tuple4D::empty();
 
         // TODO: not a generic code for general matrix dimensions
         t.x = self.m[0][0] * rhs.x
@@ -569,7 +569,7 @@ fn test_matrix_tuple_mul() {
         1.0, 2.0, 3.0, 4.0, 2.0, 4.0, 4.0, 2.0, 8.0, 6.0, 4.0, 1.0, 0.0, 0.0, 0.0, 1.0,
     );
 
-    let b = Vector::new(1.0, 2.0, 3.0, 1.0);
+    let b = Tuple4D::new(1.0, 2.0, 3.0, 1.0);
 
     let c = &a * &b;
 
@@ -922,14 +922,14 @@ fn test_matrix_inversion5() {
 #[test]
 fn test_matrix_transformation() {
     let transform = Matrix::translation(5.0, -3.0, 2.0);
-    let p = Vector::new_point(-3.0, 4.0, 5.0);
+    let p = Tuple4D::new_point(-3.0, 4.0, 5.0);
 
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, 2.0);
     assert_float(p_transformed.y, 1.0);
     assert_float(p_transformed.z, 7.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 }
 
 #[test]
@@ -937,86 +937,86 @@ fn test_matrix_transformation_invert() {
     let transform = Matrix::translation(5.0, -3.0, 2.0);
     let inv = Matrix::invert(&transform).unwrap();
 
-    let p = Vector::new_point(-3.0, 4.0, 5.0);
+    let p = Tuple4D::new_point(-3.0, 4.0, 5.0);
 
     let p_transformed = &inv * &p;
 
     assert_float(p_transformed.x, -8.0);
     assert_float(p_transformed.y, 7.0);
     assert_float(p_transformed.z, 3.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 }
 
 #[test]
-fn test_matrix_transformation_vector() {
+fn test_matrix_transformation_Tuple4D() {
     let transform = Matrix::translation(5.0, -3.0, 2.0);
-    let v = Vector::new_vector(-3.0, 4.0, 5.0);
+    let v = Tuple4D::new_Tuple4D(-3.0, 4.0, 5.0);
 
     let v_transformed = &transform * &v;
 
     assert_float(v_transformed.x, v.x);
     assert_float(v_transformed.y, v.y);
     assert_float(v_transformed.z, v.z);
-    assert!(Vector::is_vector(&v_transformed));
+    assert!(Tuple4D::is_Tuple4D(&v_transformed));
 }
 
 #[test]
 fn test_matrix_scale_point() {
     let transform = Matrix::scale(2.0, 3.0, 4.0);
-    let p = Vector::new_point(-4.0, 6.0, 8.0);
+    let p = Tuple4D::new_point(-4.0, 6.0, 8.0);
 
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, -8.0);
     assert_float(p_transformed.y, 18.0);
     assert_float(p_transformed.z, 32.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 }
 
 #[test]
-fn test_matrix_scale_vector() {
+fn test_matrix_scale_Tuple4D() {
     let transform = Matrix::scale(2.0, 3.0, 4.0);
-    let v = Vector::new_point(-4.0, 6.0, 8.0);
+    let v = Tuple4D::new_point(-4.0, 6.0, 8.0);
 
     let v_transformed = &transform * &v;
 
     assert_float(v_transformed.x, -8.0);
     assert_float(v_transformed.y, 18.0);
     assert_float(v_transformed.z, 32.0);
-    assert!(Vector::is_point(&v_transformed));
+    assert!(Tuple4D::is_point(&v_transformed));
 }
 
 #[test]
-fn test_matrix_scale_vector_invert() {
+fn test_matrix_scale_Tuple4D_invert() {
     let transform = Matrix::scale(2.0, 3.0, 4.0);
     let inv = Matrix::invert(&transform).unwrap();
 
-    let v = Vector::new_vector(-4.0, 6.0, 8.0);
+    let v = Tuple4D::new_Tuple4D(-4.0, 6.0, 8.0);
 
     let v_transformed = &inv * &v;
 
     assert_float(v_transformed.x, -2.0);
     assert_float(v_transformed.y, 2.0);
     assert_float(v_transformed.z, 2.0);
-    assert!(Vector::is_vector(&v_transformed));
+    assert!(Tuple4D::is_Tuple4D(&v_transformed));
 }
 
 #[test]
-fn test_matrix_scale_vector_reflection() {
+fn test_matrix_scale_Tuple4D_reflection() {
     let transform = Matrix::scale(-1.0, 1.0, 1.0);
-    let p = Vector::new_point(2.0, 3.0, 4.0);
+    let p = Tuple4D::new_point(2.0, 3.0, 4.0);
 
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, -2.0);
     assert_float(p_transformed.y, 3.0);
     assert_float(p_transformed.z, 4.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 }
 
 #[test]
 fn test_matrix_rotation_x() {
-    let p = Vector::new_point(0.0, 1.0, 0.0);
+    let p = Tuple4D::new_point(0.0, 1.0, 0.0);
     let half_quarter = Matrix::rotate_x(PI / 4.0);
     let full_quarter = Matrix::rotate_x(PI / 2.0);
 
@@ -1028,35 +1028,35 @@ fn test_matrix_rotation_x() {
     assert_float(half.x, 0.0);
     assert_float(half.y, sqrt2_half);
     assert_float(half.z, sqrt2_half);
-    assert!(Vector::is_point(&half));
+    assert!(Tuple4D::is_point(&half));
 
     assert_float(full.x, 0.0);
     assert_float(full.y, 0.0);
     assert_float(full.z, 1.0);
-    assert!(Vector::is_point(&full));
+    assert!(Tuple4D::is_point(&full));
 }
 
 #[test]
 fn test_matrix_rotation_x_invert() {
-    let p = Vector::new_point(0.0, 1.0, 0.0);
+    let p = Tuple4D::new_point(0.0, 1.0, 0.0);
     let half_quarter = Matrix::rotate_x(PI / 4.0);
     let inv = Matrix::invert(&half_quarter).unwrap();
 
     let half = &inv * &p;
 
     let sqrt2_half = SQRT_2 / 2.0;
-    let expected = Vector::new_point(0.0, sqrt2_half, -sqrt2_half);
-    assert_vector(&half, &expected);
+    let expected = Tuple4D::new_point(0.0, sqrt2_half, -sqrt2_half);
+    assert_Tuple4D(&half, &expected);
 
     assert_float(half.x, 0.0);
     assert_float(half.y, sqrt2_half);
     assert_float(half.z, -sqrt2_half);
-    assert!(Vector::is_point(&half));
+    assert!(Tuple4D::is_point(&half));
 }
 
 #[test]
 fn test_matrix_rotation_y() {
-    let p = Vector::new_point(0.0, 0.0, 1.0);
+    let p = Tuple4D::new_point(0.0, 0.0, 1.0);
     let half_quarter = Matrix::rotate_y(PI / 4.0);
     let full_quarter = Matrix::rotate_y(PI / 2.0);
 
@@ -1065,26 +1065,26 @@ fn test_matrix_rotation_y() {
 
     let sqrt2_half = SQRT_2 / 2.0;
 
-    let half_expected = Vector::new_point(sqrt2_half, 0.0, sqrt2_half);
-    assert_vector(&half, &half_expected);
+    let half_expected = Tuple4D::new_point(sqrt2_half, 0.0, sqrt2_half);
+    assert_Tuple4D(&half, &half_expected);
 
     assert_float(half.x, sqrt2_half);
     assert_float(half.y, 0.0);
     assert_float(half.z, sqrt2_half);
-    assert!(Vector::is_point(&half));
+    assert!(Tuple4D::is_point(&half));
 
-    let full_expected = Vector::new_point(1.0, 0.0, 0.0);
-    assert_vector(&full, &full_expected);
+    let full_expected = Tuple4D::new_point(1.0, 0.0, 0.0);
+    assert_Tuple4D(&full, &full_expected);
 
     assert_float(full.x, 1.0);
     assert_float(full.y, 0.0);
     assert_float(full.z, 0.0);
-    assert!(Vector::is_point(&full));
+    assert!(Tuple4D::is_point(&full));
 }
 
 #[test]
 fn test_matrix_rotation_z() {
-    let p = Vector::new_point(0.0, 1.0, 0.0);
+    let p = Tuple4D::new_point(0.0, 1.0, 0.0);
     let half_quarter = Matrix::rotate_z(PI / 4.0);
     let full_quarter = Matrix::rotate_z(PI / 2.0);
 
@@ -1093,83 +1093,83 @@ fn test_matrix_rotation_z() {
 
     let sqrt2_half = SQRT_2 / 2.0;
 
-    let half_expected = Vector::new_point(-sqrt2_half, sqrt2_half, 0.0);
-    assert_vector(&half, &half_expected);
+    let half_expected = Tuple4D::new_point(-sqrt2_half, sqrt2_half, 0.0);
+    assert_Tuple4D(&half, &half_expected);
 
     assert_float(half.x, -sqrt2_half);
     assert_float(half.y, sqrt2_half);
     assert_float(half.z, 0.0);
-    assert!(Vector::is_point(&half));
+    assert!(Tuple4D::is_point(&half));
 
-    let full_expected = Vector::new_point(-1.0, 0.0, 0.0);
-    assert_vector(&full, &full_expected);
+    let full_expected = Tuple4D::new_point(-1.0, 0.0, 0.0);
+    assert_Tuple4D(&full, &full_expected);
 
     assert_float(full.x, -1.0);
     assert_float(full.y, 0.0);
     assert_float(full.z, 0.0);
-    assert!(Vector::is_point(&full));
+    assert!(Tuple4D::is_point(&full));
 }
 
 #[test]
 fn test_matrix_shear1() {
     let transform = Matrix::shearing(1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-    let p = Vector::new_point(2.0, 3.0, 4.0);
+    let p = Tuple4D::new_point(2.0, 3.0, 4.0);
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, 5.0);
     assert_float(p_transformed.y, 3.0);
     assert_float(p_transformed.z, 4.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 
     let transform = Matrix::shearing(0.0, 1.0, 0.0, 0.0, 0.0, 0.0);
-    let p = Vector::new_point(2.0, 3.0, 4.0);
+    let p = Tuple4D::new_point(2.0, 3.0, 4.0);
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, 6.0);
     assert_float(p_transformed.y, 3.0);
     assert_float(p_transformed.z, 4.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 
     let transform = Matrix::shearing(0.0, 0.0, 1.0, 0.0, 0.0, 0.0);
-    let p = Vector::new_point(2.0, 3.0, 4.0);
+    let p = Tuple4D::new_point(2.0, 3.0, 4.0);
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, 2.0);
     assert_float(p_transformed.y, 5.0);
     assert_float(p_transformed.z, 4.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 
     let transform = Matrix::shearing(0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-    let p = Vector::new_point(2.0, 3.0, 4.0);
+    let p = Tuple4D::new_point(2.0, 3.0, 4.0);
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, 2.0);
     assert_float(p_transformed.y, 7.0);
     assert_float(p_transformed.z, 4.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 
     let transform = Matrix::shearing(0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-    let p = Vector::new_point(2.0, 3.0, 4.0);
+    let p = Tuple4D::new_point(2.0, 3.0, 4.0);
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, 2.0);
     assert_float(p_transformed.y, 3.0);
     assert_float(p_transformed.z, 6.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 
     let transform = Matrix::shearing(0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
-    let p = Vector::new_point(2.0, 3.0, 4.0);
+    let p = Tuple4D::new_point(2.0, 3.0, 4.0);
     let p_transformed = &transform * &p;
 
     assert_float(p_transformed.x, 2.0);
     assert_float(p_transformed.y, 3.0);
     assert_float(p_transformed.z, 7.0);
-    assert!(Vector::is_point(&p_transformed));
+    assert!(Tuple4D::is_point(&p_transformed));
 }
 
 #[test]
 fn test_matrix_transformation_sequential() {
-    let p = Vector::new_point(1.0, 0.0, 1.0);
+    let p = Tuple4D::new_point(1.0, 0.0, 1.0);
     let a = Matrix::rotate_x(PI / 2.0);
     let b = Matrix::scale(5.0, 5.0, 5.0);
     let c = Matrix::translation(10.0, 5.0, 7.0);
@@ -1181,22 +1181,22 @@ fn test_matrix_transformation_sequential() {
     assert_float(p2.x, 1.0);
     assert_float(p2.y, -1.0);
     assert_float(p2.z, 0.0);
-    assert!(Vector::is_point(&p2));
+    assert!(Tuple4D::is_point(&p2));
 
     assert_float(p3.x, 5.0);
     assert_float(p3.y, -5.0);
     assert_float(p3.z, 0.0);
-    assert!(Vector::is_point(&p3));
+    assert!(Tuple4D::is_point(&p3));
 
     assert_float(p4.x, 15.0);
     assert_float(p4.y, 0.0);
     assert_float(p4.z, 7.0);
-    assert!(Vector::is_point(&p4));
+    assert!(Tuple4D::is_point(&p4));
 }
 
 #[test]
 fn test_matrix_transformation_chained() {
-    let p = Vector::new_point(1.0, 0.0, 1.0);
+    let p = Tuple4D::new_point(1.0, 0.0, 1.0);
     let a = Matrix::rotate_x(PI / 2.0);
     let b = Matrix::scale(5.0, 5.0, 5.0);
     let c = Matrix::translation(10.0, 5.0, 7.0);
@@ -1208,14 +1208,14 @@ fn test_matrix_transformation_chained() {
     assert_float(p2.x, 15.0);
     assert_float(p2.y, 0.0);
     assert_float(p2.z, 7.0);
-    assert!(Vector::is_point(&p2));
+    assert!(Tuple4D::is_point(&p2));
 }
 
 #[test]
 fn test_matrix_view_transform_default_direction() {
-    let from = Vector::new_point(0.0, 0.0, 0.0);
-    let to = Vector::new_point(0.0, 0.0, -1.0);
-    let up = Vector::new_vector(0.0, 1.0, 0.0);
+    let from = Tuple4D::new_point(0.0, 0.0, 0.0);
+    let to = Tuple4D::new_point(0.0, 0.0, -1.0);
+    let up = Tuple4D::new_Tuple4D(0.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
     let v_expected = Matrix::new_identity_4x4();
@@ -1225,9 +1225,9 @@ fn test_matrix_view_transform_default_direction() {
 
 #[test]
 fn test_matrix_view_transform_positive_z_direction() {
-    let from = Vector::new_point(0.0, 0.0, 0.0);
-    let to = Vector::new_point(0.0, 0.0, 1.0);
-    let up = Vector::new_vector(0.0, 1.0, 0.0);
+    let from = Tuple4D::new_point(0.0, 0.0, 0.0);
+    let to = Tuple4D::new_point(0.0, 0.0, 1.0);
+    let up = Tuple4D::new_Tuple4D(0.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
     let v_expected = Matrix::scale(-1.0, 1.0, -1.0);
@@ -1237,9 +1237,9 @@ fn test_matrix_view_transform_positive_z_direction() {
 
 #[test]
 fn test_matrix_view_transform_translation() {
-    let from = Vector::new_point(0.0, 0.0, 8.0);
-    let to = Vector::new_point(0.0, 0.0, 0.0);
-    let up = Vector::new_vector(0.0, 1.0, 0.0);
+    let from = Tuple4D::new_point(0.0, 0.0, 8.0);
+    let to = Tuple4D::new_point(0.0, 0.0, 0.0);
+    let up = Tuple4D::new_Tuple4D(0.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
     let v_expected = Matrix::translation(0.0, 0.0, -8.0);
@@ -1249,9 +1249,9 @@ fn test_matrix_view_transform_translation() {
 
 #[test]
 fn test_matrix_view_transform_arbitrary() {
-    let from = Vector::new_point(1.0, 3.0, 2.0);
-    let to = Vector::new_point(4.0, -2.0, 8.0);
-    let up = Vector::new_vector(1.0, 1.0, 0.0);
+    let from = Tuple4D::new_point(1.0, 3.0, 2.0);
+    let to = Tuple4D::new_point(4.0, -2.0, 8.0);
+    let up = Tuple4D::new_Tuple4D(1.0, 1.0, 0.0);
 
     let v = Matrix::view_transform(&from, &to, &up);
 

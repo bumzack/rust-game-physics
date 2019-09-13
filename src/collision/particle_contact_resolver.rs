@@ -3,11 +3,10 @@ use std::f32::MAX;
 use crate::collision::particle_contact::ParticleContactOps;
 use crate::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
 use crate::force::particle_force_types::{ParticleContactsContainer, ParticleIdx};
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::Particle;
 use crate::particle::particle::ParticleOps;
+use math::prelude::*;
 
 pub struct ParticleContactResolver {
     iterations: usize,

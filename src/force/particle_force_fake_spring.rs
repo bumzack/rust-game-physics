@@ -1,14 +1,13 @@
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
 use crate::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
 use crate::force::particle_force_types::{ParticleContainer, ParticleIdx};
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::{Particle, ParticleOps};
+use math::prelude::*;
 
 #[derive(Clone)]
 pub struct ParticleForceFakeSpring {
-    anchor: Vector,
+    anchor: Tuple4D,
     spring_constant: f32,
     damping: f32,
 }
@@ -24,7 +23,7 @@ impl ParticleForceGeneratorOps for ParticleForceFakeSpring {
             return;
         }
 
-        let mut position = Vector::new_vector_from(particle.get_position());
+        let mut position = Tuple4D::new_point_from(particle.get_position());
         position = &position - &self.anchor;
 
         let gamma = 0.5 * (4.0 * self.spring_constant - self.damping * self.damping).sqrt();
@@ -49,17 +48,17 @@ impl ParticleForceGeneratorOps for ParticleForceFakeSpring {
 impl ParticleForceFakeSpring {
     pub fn new() -> ParticleForceFakeSpring {
         ParticleForceFakeSpring {
-            anchor: Vector::new_vector(0.0, 0.0, 0.0),
+            anchor: Tuple4D::new_point(0.0, 0.0, 0.0),
             spring_constant: 0.0,
             damping: 0.0,
         }
     }
 
-    pub fn set_anchor(&mut self, anchor: Vector) {
+    pub fn set_anchor(&mut self, anchor: Tuple4D) {
         self.anchor = anchor;
     }
 
-    pub fn get_anchor(&self) -> &Vector {
+    pub fn get_anchor(&self) -> &Tuple4D {
         &self.anchor
     }
 

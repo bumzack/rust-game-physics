@@ -1,10 +1,10 @@
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
 use crate::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
 use crate::force::particle_force_types::{ParticleContainer, ParticleIdx};
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::{Particle, ParticleOps};
+use math::prelude::*;
+
 
 #[derive(Clone)]
 pub struct ParticleForceBuoyancySpring {
@@ -26,7 +26,7 @@ impl ParticleForceGeneratorOps for ParticleForceBuoyancySpring {
             return;
         }
 
-        let mut f = Vector::new_vector(0.0, 0.0, 0.0);
+        let mut f = Tuple4D::new_vector(0.0, 0.0, 0.0);
         if depth <= self.water_height - self.max_depth {
             f.set_y(self.liquid_density * self.volume);
             particle.add_force(&f);

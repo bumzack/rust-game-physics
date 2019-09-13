@@ -1,14 +1,13 @@
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
 use crate::force::particle_force_registry::ParticleForceRegistry;
 use crate::force::particle_force_types::ParticleContainer;
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::{Particle, ParticleOps};
+use math::prelude::*;
 
 #[derive(Clone)]
 pub struct ParticleForceGravity {
-    gravity: Vector,
+    gravity: Tuple4D,
 }
 
 impl<'a> ParticleForceGeneratorOps for ParticleForceGravity {
@@ -34,19 +33,19 @@ impl<'a> ParticleForceGeneratorOps for ParticleForceGravity {
 impl<'a> ParticleForceGravity {
     pub fn new() -> ParticleForceGravity {
         ParticleForceGravity {
-            gravity: Vector::new_vector(0.0, 10.0, 0.0),
+            gravity: Tuple4D::new_vector(0.0, 10.0, 0.0),
         }
     }
 
-    pub fn set_gravity(&mut self, g: Vector) {
+    pub fn set_gravity(&mut self, g: Tuple4D) {
         self.gravity = g;
     }
 
-    pub fn get_gravity(&self) -> &Vector {
+    pub fn get_gravity(&self) -> &Tuple4D {
         &self.gravity
     }
 
-    pub fn get_gravity_mut(&mut self) -> &mut Vector {
+    pub fn get_gravity_mut(&mut self) -> &mut Tuple4D {
         &mut self.gravity
     }
 }

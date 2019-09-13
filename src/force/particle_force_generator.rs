@@ -1,7 +1,7 @@
 use crate::force::particle_force_registry::ParticleForceRegistry;
 use crate::force::particle_force_types::ParticleContainer;
-use crate::math::common::assert_vector;
-use crate::particle::particle::{Particle, ParticleOps};
+ use crate::particle::particle::{Particle, ParticleOps};
+use math::prelude::*;
 
 pub trait ParticleForceGeneratorOps: ParticleForceGeneratorOpsClone {
     fn update_force(

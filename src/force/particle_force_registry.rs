@@ -5,9 +5,8 @@ use crate::force::particle_force_types::{
     ParticleContainer, ParticleForceGeneratorOpsContainer, ParticleForceGeneratorOpsIdx,
     ParticleIdx,
 };
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
 use crate::particle::particle::{Particle, ParticleOps};
+use math::prelude::*;
 
 #[derive(Clone)]
 pub struct ParticleForceRegistry {
@@ -45,7 +44,7 @@ pub trait ParticleForceRegistryOps {
         idx: ParticleForceGeneratorOpsIdx,
     ) -> &mut ParticleForceGeneratorOps;
 
-    fn set_velocity(&mut self, p_idx: ParticleIdx, v: Vector);
+    fn set_velocity(&mut self, p_idx: ParticleIdx, v: Tuple4D);
 }
 
 impl ParticleForceRegistryOps for ParticleForceRegistry {
@@ -120,11 +119,11 @@ impl ParticleForceRegistryOps for ParticleForceRegistry {
         &*self.particle_force_generators[idx]
     }
 
-    fn get_particle_force_generators_mut(&mut self, idx: usize) -> &mut ParticleForceGeneratorOps {
+    fn get_particle_force_generators_mut(&mut self, idx: usize) -> &mut dyn ParticleForceGeneratorOps {
         &mut *self.particle_force_generators[idx]
     }
 
-    fn set_velocity(&mut self, p_idx: usize, v: Vector) {
+    fn set_velocity(&mut self, p_idx: usize, v: Tuple4D) {
         self.particles[p_idx].set_velocity(v);
     }
 }

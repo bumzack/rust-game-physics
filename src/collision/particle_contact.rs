@@ -1,17 +1,16 @@
 use crate::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
 use crate::force::particle_force_types::ParticleIdx;
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::Particle;
 use crate::particle::particle::ParticleOps;
+use math::prelude::*;
 
 pub struct ParticleContact {
     particle: Vec<Option<ParticleIdx>>,
     restitution: f32,
     penetration: f32,
-    contact_normal: Vector,
-    particle_movement: Vec<Option<Vector>>,
+    contact_normal: Tuple4D,
+    particle_movement: Vec<Option<Tuple4D>>,
 }
 
 pub trait ParticleContactOps {
@@ -33,7 +32,7 @@ impl ParticleContactOps for ParticleContact {
 
     fn calculate_separating_velocity(&self, registry: &mut ParticleForceRegistry) -> f32 {
         let p0 = registry.get_particle(self.particle[0].unwrap());
-        let mut relative_velocity = Vector::new_vector_from(p0.get_velocity());
+        let mut relative_velocity = Tuple4D::new_vector_from(p0.get_velocity());
 
         if self.particle[1].is_some() {
             let p1 = registry.get_particle(self.particle[1].unwrap());
@@ -60,9 +59,9 @@ impl ParticleContactOps for ParticleContact {
         let p1 = registry.get_particle(self.particle[1].unwrap());
 
         // check velocity buildup due to acc.
-        let mut acc_caused_velocity = Vector::new_vector_from(p0.get_acceleration());
+        let mut acc_caused_velocity = Tuple4D::new_vector_from(p0.get_acceleration());
         if self.particle[1].is_some() {
-            acc_caused_velocity = &acc_caused_velocity - &p1.get_acceleration();
+            acc_caused_velocity = &acc_caused_velocity - p1.get_acceleration();
         }
         let mut acc_caused_sep_velocity = (acc_caused_velocity ^ self.contact_normal) * duration;
 
@@ -140,7 +139,7 @@ impl ParticleContactOps for ParticleContact {
         let p0_position_new = p0.get_position() + &self.particle_movement[0].unwrap();
         registry.set_velocity(self.particle[0].unwrap(), p0_position_new);
 
-        let particle_movement1 = Vector::new_vector(0.0, 0.0, 0.0);
+        let particle_movement1 = Tuple4D::new_vector(0.0, 0.0, 0.0);
         if self.particle[1].is_some() {
             let p1 = registry.get_particle(self.particle[1].unwrap());
             self.particle_movement[1] = Some(move_per_inverse_mass * (-p1.get_inverse_mass()));
@@ -156,7 +155,7 @@ impl ParticleContact {
             particle: vec![None; 2],
             restitution: 0.0,
             penetration: 0.0,
-            contact_normal: Vector::new_vector(0.0, 0.0, 0.0),
+            contact_normal: Tuple4D::new_vector(0.0, 0.0, 0.0),
             particle_movement: vec![None; 2],
         }
     }
@@ -181,7 +180,7 @@ impl ParticleContact {
         self.penetration
     }
 
-    pub fn set_contact_normal(&mut self, contact_normal: Vector) {
+    pub fn set_contact_normal(&mut self, contact_normal: Tuple4D) {
         self.contact_normal = contact_normal;
     }
 }

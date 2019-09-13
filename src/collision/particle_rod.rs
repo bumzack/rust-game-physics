@@ -4,9 +4,8 @@ use crate::collision::particle_contact::{ParticleContact, ParticleContactOps};
 use crate::collision::particle_link::ParticleLinkOps;
 use crate::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
 use crate::force::particle_force_types::{ParticleContactsContainer, ParticleIdx};
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+use math::prelude::*;
+
 use crate::particle::particle::Particle;
 use crate::particle::particle::ParticleOps;
 
@@ -22,7 +21,7 @@ impl ParticleLinkOps for ParticleRod {
         let p0 = registry.get_particle(self.particle[0].unwrap());
         let p1 = registry.get_particle(self.particle[1].unwrap());
         let relative_pos = p0.get_position() - p1.get_position();
-        relative_pos.magnitude()
+        Tuple4D::magnitude(    &relative_pos)
     }
 
     fn add_contact(
@@ -45,15 +44,15 @@ impl ParticleLinkOps for ParticleRod {
         contact.set_particle0(self.particle[0].unwrap());
         contact.set_particle1(self.particle[1].unwrap());
 
-        let mut normal = p1.get_position() - p0.get_position();
-        normal.normalize();
+        let   normal = p1.get_position() - p0.get_position();
+     let normal = Tuple4D::normalize(&normal);
 
         // the contact normal depends on whether extend or compress
         if current_length > self.length {
             contact.set_contact_normal(normal);
             contact.set_penetration(current_length - self.length)
         } else {
-            contact.set_contact_normal(-normal);
+            contact.set_contact_normal(  &normal * (-1.0) );
             contact.set_penetration(self.length - current_length);
         }
         contact.set_restitution(0.0);

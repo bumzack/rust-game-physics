@@ -1,10 +1,8 @@
 use crate::force::particle_force_generator::ParticleForceGeneratorOps;
-use crate::force::particle_force_registry::{ParticleForceRegistry, ParticleForceRegistryOps};
 use crate::force::particle_force_types::{ParticleContainer, ParticleIdx};
-use crate::math::common::assert_vector;
-use crate::math::vector::Vector;
-use crate::math::vector::VectorOps;
+
 use crate::particle::particle::{Particle, ParticleOps};
+use math::prelude::*;
 
 #[derive(Clone)]
 pub struct ParticleForceSpring {
@@ -21,15 +19,15 @@ impl ParticleForceGeneratorOps for ParticleForceSpring {
         all_particles: &ParticleContainer,
     ) {
         let other_particle = all_particles[self.other.unwrap()];
-        let mut f = Vector::new_vector_from(particle.get_position());
+        let mut f = Tuple4D::new_point_from(particle.get_position());
         f = &f - other_particle.get_position();
 
-        let mut magnitude = f.magnitude();
+        let mut magnitude = Tuple4D::magnitude(&f);
         magnitude = (magnitude - self.rest_length).abs();
         magnitude = magnitude * self.spring_constant;
 
         // calc. final force and apply
-        f.normalize();
+        let mut f = Tuple4D::normalize(&f);
         f = f * (-magnitude);
         println!(
             "add force from spring: {:?},    particle.id = {}",
